@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
@@ -11,34 +12,44 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.validator.FilmorateValidationErrorBuilder;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.*;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @RestController
+@Slf4j
 public class UserController {
     private List<User> users = new ArrayList<>();
 
     @GetMapping("/users")
-    public List<User> getAllUsers() {
-        return users;
+    public ResponseEntity<Iterable<User>> getAllUsers() {
+        return ResponseEntity.ok(users);
     }
 
     @PostMapping("/user")
-    public ResponseEntity<?> create(@Valid @RequestBody User user, Errors errors) {
-        if (errors.hasErrors()) return ResponseEntity.badRequest()
+    public ResponseEntity<?> create(HttpServletRequest request, @Valid @RequestBody User user, Errors errors) {
+        if (errors.hasErrors()) {
+            log.info("Validation error with request: " + request.getRequestURI());
+            return ResponseEntity.badRequest()
                 .body(FilmorateValidationErrorBuilder.fromBindingErrors(errors));
+        }
         users.add(user);
         return ResponseEntity.ok(user);
     }
 
     @PatchMapping("/user/{id}")
-    public User update(@Valid @RequestBody User user, @PathVariable int id) {
+    public ResponseEntity<?> update(HttpServletRequest request, @Valid @RequestBody User user, @PathVariable int id, Errors errors) {
         int userId = findUserById(id);
         if (userId == -1) throw new ResponseStatusException(NOT_FOUND, "Unable to find");
+        if (errors.hasErrors()) {
+            log.info("Validation error with request: " + request.getRequestURI());
+            return ResponseEntity.badRequest()
+                    .body(FilmorateValidationErrorBuilder.fromBindingErrors(errors));
+        }
         users.set(userId, user);
-        return user;
+        return ResponseEntity.ok(user);
     }
 
     int findUserById(int id) {
