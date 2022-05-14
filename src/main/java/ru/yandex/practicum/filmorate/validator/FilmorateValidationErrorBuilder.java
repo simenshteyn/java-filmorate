@@ -6,7 +6,7 @@ public class FilmorateValidationErrorBuilder {
     public static FilmorateValidationError fromBindingErrors(Errors errors) {
         FilmorateValidationError error = new FilmorateValidationError(
                 "Validation failure: " + errors.getErrorCount() + " errors.");
-        errors.getAllErrors().stream().forEach(e -> error.addValidationError(e.getDefaultMessage()));
+        errors.getAllErrors().forEach(e -> error.addValidationError(e.getDefaultMessage()));
         return error;
     }
 }

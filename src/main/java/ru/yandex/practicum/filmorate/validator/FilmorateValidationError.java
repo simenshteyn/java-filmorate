@@ -8,7 +8,7 @@ import java.util.List;
 
 public class FilmorateValidationError {
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    private List<String> errors = new ArrayList<>();
+    private final List<String> errors = new ArrayList<>();
     @JsonProperty("message")
     private final String errorMessage;
 

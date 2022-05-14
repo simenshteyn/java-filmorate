@@ -20,7 +20,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @RestController
 @Slf4j
 public class FilmController {
-    private List<Film> films = new ArrayList<>();
+    private final List<Film> films = new ArrayList<>();
 
     @GetMapping("/films")
     public ResponseEntity<Iterable<Film>> getAllPosts() {

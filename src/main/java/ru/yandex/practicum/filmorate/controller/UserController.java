@@ -8,7 +8,6 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.validator.FilmorateValidationErrorBuilder;
 
@@ -21,7 +20,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @RestController
 @Slf4j
 public class UserController {
-    private List<User> users = new ArrayList<>();
+    private final List<User> users = new ArrayList<>();
 
     @GetMapping("/users")
     public ResponseEntity<Iterable<User>> getAllUsers() {
