@@ -23,7 +23,7 @@ public class FilmController {
     private final List<Film> films = new ArrayList<>();
 
     @GetMapping("/films")
-    public ResponseEntity<Iterable<Film>> getAllPosts() {
+    public ResponseEntity<List<Film>> getAllPosts() {
         return ResponseEntity.ok(films);
     }
 
@@ -40,7 +40,7 @@ public class FilmController {
 
     @PatchMapping("/film/{id}")
     public ResponseEntity<?> update(HttpServletRequest request, @Valid @RequestBody Film film, @PathVariable int id, Errors errors) {
-        int filmId = findFilmById(id);
+        int filmId = findFilmIndexById(id);
         if (filmId == -1) throw new ResponseStatusException(NOT_FOUND, "Unable to find");
         if (errors.hasErrors()) {
             log.info("Validation error with request: " + request.getRequestURI());
@@ -51,8 +51,13 @@ public class FilmController {
         return ResponseEntity.ok(film);
     }
 
-    int findFilmById(int id) {
-        Optional<Film> result = films.stream().filter( i -> i.getId() == id).findAny();
+    /**
+     * Find index of Film from films collection by Film id.
+     * @param id Film id to search
+     * @return Film index in films collection if present, else -1.
+     */
+    private int findFilmIndexById(int id) {
+        Optional<Film> result = films.stream().filter(i -> i.getId() == id).findAny();
         return result.isEmpty() ? -1 : films.indexOf(result.get());
     }
 

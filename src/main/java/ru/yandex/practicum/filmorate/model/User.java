@@ -12,7 +12,7 @@ import javax.validation.constraints.Past;
 public class User {
     private int id;
     @Email(message = "Email should be in right format")
-    @NotBlank(message = "Email can't be blanc")
+    @NotBlank(message = "Email can't be blank")
     @NotNull(message = "Email can't be null")
     private String email;
     private String login;
