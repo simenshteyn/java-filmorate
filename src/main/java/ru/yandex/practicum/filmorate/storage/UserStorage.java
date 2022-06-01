@@ -20,6 +20,11 @@ public interface UserStorage {
     User removeUser(int userId);
 
     /**
+     * Remove all users from storage.
+     */
+    void removeAll();
+
+    /**
      * Update User object in storage by ID with new User object.
      * @param userId ID of user to update.
      * @param user User object to update with.
@@ -35,12 +40,12 @@ public interface UserStorage {
     User getUser(int userId);
 
     /**
-     * Get User objects from storage with amount and offset parameters.
-     * @param amount Amount of users to get from storage.
+     * Get User objects from storage with limit and offset parameters.
+     * @param limit Amount of users to get from storage.
      * @param offset Offset of users to search from storage.
-     * @return List of User objects or null if not found.
+     * @return List of User objects, could be empty.
      */
-    List<User> getUsers(int amount, int offset);
+    List<User> getUsers(int limit, int offset);
 
     /**
      * Get list of all users from storage.
