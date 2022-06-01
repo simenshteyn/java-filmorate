@@ -20,6 +20,11 @@ public interface FilmStorage {
     Film removeFilm(int filmId);
 
     /**
+     * Clear storage and remove all Films.
+     */
+    void removeAll();
+
+    /**
      * Update Film by ID with new Film object
      * @param filmId ID of Film object to update.
      * @param film New Film object to replace old one.
@@ -36,11 +41,11 @@ public interface FilmStorage {
 
     /**
      * Get Film objects from storage.
-     * @param amount Amount of Film objects to get.
-     * @param offset Offset of search from storage.
-     * @return List of Film objects or null.
+     * @param limit Amount of Film objects to get.
+     * @param offset Limit amount of search from storage.
+     * @return List of found Film objects.
      */
-    List<Film> getFilms(int amount, int offset);
+    List<Film> getFilms(int limit, int offset);
 
     /**
      * Get all Films from storage.
