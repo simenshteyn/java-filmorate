@@ -1,6 +1,9 @@
 package ru.yandex.practicum.filmorate.model;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
+
 import lombok.Data;
 
 import javax.validation.constraints.Email;
@@ -19,4 +22,5 @@ public class User {
     private String name;
     @Past(message = "Birthday should be in the past")
     private LocalDate birthday;
+    private Set<Integer> friends = new HashSet<>();
 }
