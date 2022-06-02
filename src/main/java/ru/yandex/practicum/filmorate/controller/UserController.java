@@ -57,7 +57,7 @@ public class UserController {
             return ResponseEntity.badRequest()
                     .body(FilmorateValidationErrorBuilder.fromBindingErrors(errors));
         }
-        userStorage.updateUser(userSearch.get().getId(), user);
+        userStorage.updateUser(id, user);
         return ResponseEntity.ok(user);
     }
 
@@ -73,5 +73,4 @@ public class UserController {
         });
         return errors;
     }
-
 }
