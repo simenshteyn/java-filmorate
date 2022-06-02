@@ -37,6 +37,26 @@ public class FilmController {
         return filmStorage.getAllFilms();
     }
 
+    @PutMapping("/films/{id}/like/{userId}")
+    public ResponseEntity<?> addLike(@PathVariable int id, @PathVariable int userId) {
+        Optional<Film> film = Optional.ofNullable(filmService.addLike(userId, id));
+        if (film.isEmpty()) throw new ResponseStatusException(NOT_FOUND, "Unable to find");
+        return ResponseEntity.ok(film.get());
+    }
+
+    @DeleteMapping("/films/{id}/like/{userId}")
+    public ResponseEntity<?> removeLike(@PathVariable int id, @PathVariable int userId) {
+        Optional<Film> film = Optional.ofNullable(filmService.removeLike(userId, id));
+        if (film.isEmpty()) throw new ResponseStatusException(NOT_FOUND, "Unable to find");
+        return ResponseEntity.ok(film.get());
+    }
+
+    @GetMapping("/films/popular")
+    public ResponseEntity<?> getTopFilms(@RequestParam Optional<Integer> count) {
+        return ResponseEntity.ok(filmService.showTopFilms(count.orElse(10)));
+
+    }
+
     @PostMapping("/film")
     public ResponseEntity<?> create(HttpServletRequest request, @Valid @RequestBody Film film, Errors errors) {
         if (errors.hasErrors()) {

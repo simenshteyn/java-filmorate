@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -27,6 +28,7 @@ public class FilmControllerIntegrationTest {
     @Autowired
     private MockMvc mockMvc;
     private static Film film;
+    private static User user;
 
     @BeforeAll
     public static void beforeAll() {
@@ -36,6 +38,13 @@ public class FilmControllerIntegrationTest {
        film.setDescription("some description");
        film.setDuration(180);
        film.setReleaseDate(LocalDate.of(2020, Month.JANUARY, 1));
+
+        user = new User();
+        user.setId(1);
+        user.setName("Testuser");
+        user.setLogin("testuser");
+        user.setEmail("test@user.com");
+        user.setBirthday(LocalDate.of(1970, Month.JANUARY, 1));
     }
 
     @Test
@@ -82,5 +91,19 @@ public class FilmControllerIntegrationTest {
                         get("/films"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(Arrays.asList(film))));
+
+        // Expect 404 for unknown ids
+        mockMvc.perform(put(String.format("/films/%d/like/%d", film.getId()+1, user.getId()))).andExpect(status().isNotFound());
+
+        // Add user with POST request and check like adding
+        mockMvc.perform(
+                        post("/user")
+                                .content(objectMapper.writeValueAsString(user))
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1));
+        mockMvc.perform(put(String.format("/films/%d/like/%d", film.getId(), user.getId()))).andExpect(status().isOk());
+        mockMvc.perform(delete(String.format("/films/%d/like/%d", film.getId(), user.getId()))).andExpect(status().isOk());
     }
 }
