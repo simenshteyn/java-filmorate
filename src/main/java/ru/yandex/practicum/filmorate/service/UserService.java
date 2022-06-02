@@ -63,10 +63,9 @@ public class UserService {
         Optional<User> first = Optional.ofNullable(storage.getUser(firstUserId));
         Optional<User> second = Optional.ofNullable(storage.getUser(secondUserId));
         if (first.isPresent() && second.isPresent()) {
-            Set<Integer> result = first.get().getFriends().stream()
+            return first.get().getFriends().stream()
                     .filter(second.get().getFriends()::contains)
                     .collect(Collectors.toSet());
-            return result;
         }
         return null;
     }

@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,16 +93,7 @@ public class FilmControllerIntegrationTest {
 
         // Expect 404 for unknown ids
         mockMvc.perform(put(String.format("/films/%d/like/%d", film.getId()+1, user.getId()))).andExpect(status().isNotFound());
-
-        // Add user with POST request and check like adding
-        mockMvc.perform(
-                        post("/user")
-                                .content(objectMapper.writeValueAsString(user))
-                                .contentType(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1));
-        mockMvc.perform(put(String.format("/films/%d/like/%d", film.getId(), user.getId()))).andExpect(status().isOk());
-        mockMvc.perform(delete(String.format("/films/%d/like/%d", film.getId(), user.getId()))).andExpect(status().isOk());
+        mockMvc.perform(put(String.format("/films/%d/like/%d", film.getId(), user.getId()))).andExpect(status().isNotFound());
+        mockMvc.perform(delete(String.format("/films/%d/like/%d", film.getId(), user.getId()))).andExpect(status().isNotFound());
     }
 }
