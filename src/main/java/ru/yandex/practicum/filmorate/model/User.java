@@ -23,4 +23,5 @@ public class User {
     @Past(message = "Birthday should be in the past")
     private LocalDate birthday;
     private Set<Integer> friends = new HashSet<>();
+    private Set<Integer> filmsLiked = new HashSet<>();
 }

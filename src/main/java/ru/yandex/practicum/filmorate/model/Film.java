@@ -1,6 +1,8 @@
 package ru.yandex.practicum.filmorate.model;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
@@ -21,4 +23,6 @@ public class Film {
     private LocalDate releaseDate;
     @Positive(message = "Duration in seconds should be positive number")
     private int duration;
+    private Set<Integer> usersLikedIds = new HashSet<>();
+    public int countUsersLiked() { return usersLikedIds.size(); }
 }
