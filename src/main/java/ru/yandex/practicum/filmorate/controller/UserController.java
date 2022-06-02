@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +36,36 @@ public class UserController {
     @GetMapping("/users")
     public List<User> getAllUsers() {
         return this.userStorage.getAllUsers();
+    }
+
+    @PutMapping("/users/{id}/friends/{friendId}")
+    public ResponseEntity<?> makeFriends(@PathVariable int id, @PathVariable int friendId) {
+        Optional<List<User>> friends = Optional.ofNullable(userService.makeFriends(id, friendId));
+        if (friends.isEmpty()) throw new ResponseStatusException(NOT_FOUND, "Unable to find user");
+        return ResponseEntity.ok(friends);
+    }
+
+    @DeleteMapping("/users/{id}/friends/{friendId}")
+    public ResponseEntity<?> removeFriends(@PathVariable int id, @PathVariable int friendId) {
+        Optional<List<User>> friends = Optional.ofNullable(userService.removeFriends(id, friendId));
+        if (friends.isEmpty()) throw new ResponseStatusException(NOT_FOUND, "Unable to find user");
+        return ResponseEntity.ok(friends);
+    }
+
+    @GetMapping("/users/{id}/friends")
+    public ResponseEntity<?> getUserFriends(@PathVariable int id) {
+        Optional<List<User>> friends = Optional.ofNullable(userStorage.getUserFriends(id));
+        if (friends.isEmpty()) throw new ResponseStatusException(NOT_FOUND, "Unable to find user");
+        return ResponseEntity.ok(friends);
+    }
+
+    @GetMapping("/users/{id}/friends/common/{otherId}")
+    public ResponseEntity<?> getCommonFriends(@PathVariable int id, @PathVariable int otherId) {
+        Optional<Set<Integer>> friendsIds = Optional.ofNullable(userService.showCommonFriends(id, otherId));
+        if (friendsIds.isEmpty()) throw new ResponseStatusException(NOT_FOUND, "Unable to find user");
+        List<User> result = new ArrayList<>();
+        friendsIds.get().forEach(i -> result.add(userStorage.getUser(i)));
+        return ResponseEntity.ok(result);
     }
 
     @PostMapping("/user")

@@ -105,6 +105,39 @@ abstract class UserStorageTest<T extends UserStorage> {
     }
 
     @Test
+    void getUserFriends() {
+        // Create new user
+        User user = new User();
+        user.setId(42);
+        user.setName("Testuser");
+        user.setLogin("testuser");
+        user.setEmail("test@user.com");
+        user.getFriends().add(13);
+        user.setBirthday(LocalDate.of(1970, Month.JANUARY, 1));
+
+        // Create second new user
+        User user2 = new User();
+        user2.setId(13);
+        user2.setName("Seconduser");
+        user2.setLogin("seconduser");
+        user2.setEmail("second@user.com");
+        user2.getFriends().add(42);
+        user2.setBirthday(LocalDate.of(1980, Month.JANUARY, 1));
+
+        // Check storage is empty
+        assertTrue(storage.getAllUsers().isEmpty());
+
+        // Add user to storage and check it
+        storage.addUser(user);
+        storage.addUser(user2);
+        assertEquals(2, storage.getAllUsers().size());
+
+        // Check both are friends
+        assertEquals("Seconduser", storage.getUserFriends(42).get(0).getName());
+        assertEquals("Testuser", storage.getUserFriends(13).get(0).getName());
+    }
+
+    @Test
     void getUsers() {
         // Create new user
         User user = new User();

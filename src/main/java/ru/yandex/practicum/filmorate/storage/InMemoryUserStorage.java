@@ -6,6 +6,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
@@ -44,6 +45,18 @@ public class InMemoryUserStorage implements UserStorage {
     public User getUser(int userId) {
         int result = findUserIndexById(userId);
         if (result != -1) return storage.get(result);
+        return null;
+    }
+
+    @Override
+    public List<User> getUserFriends(int userId) {
+        int result = findUserIndexById(userId);
+        List<User> friendsList = new ArrayList<>();
+        if (result != -1) {
+            Set<Integer> friendsIds = storage.get(result).getFriends();
+            friendsIds.forEach(i -> friendsList.add(getUser(i)));
+            return friendsList;
+        }
         return null;
     }
 
