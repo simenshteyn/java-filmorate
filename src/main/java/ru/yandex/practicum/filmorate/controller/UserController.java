@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
@@ -9,6 +10,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 import ru.yandex.practicum.filmorate.validator.FilmorateValidationErrorBuilder;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,11 +23,18 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @RestController
 @Slf4j
 public class UserController {
-    private final List<User> users = new ArrayList<>();
+    private final UserService userService;
+    private final UserStorage userStorage;
+
+    @Autowired
+    public UserController(UserService userService, UserStorage userStorage) {
+        this.userService = userService;
+        this.userStorage = userStorage;
+    }
 
     @GetMapping("/users")
-    public ResponseEntity<Iterable<User>> getAllUsers() {
-        return ResponseEntity.ok(users);
+    public List<User> getAllUsers() {
+        return this.userStorage.getAllUsers();
     }
 
     @PostMapping("/user")
@@ -34,26 +44,21 @@ public class UserController {
             return ResponseEntity.badRequest()
                 .body(FilmorateValidationErrorBuilder.fromBindingErrors(errors));
         }
-        users.add(user);
+        userStorage.addUser(user);
         return ResponseEntity.ok(user);
     }
 
     @PatchMapping("/user/{id}")
     public ResponseEntity<?> update(HttpServletRequest request, @Valid @RequestBody User user, @PathVariable int id, Errors errors) {
-        int userId = findUserById(id);
-        if (userId == -1) throw new ResponseStatusException(NOT_FOUND, "Unable to find");
+        Optional<User> userSearch = Optional.ofNullable(userStorage.getUser(id));
+        if (userSearch.isEmpty()) throw new ResponseStatusException(NOT_FOUND, "Unable to find");
         if (errors.hasErrors()) {
             log.info("Validation error with request: " + request.getRequestURI());
             return ResponseEntity.badRequest()
                     .body(FilmorateValidationErrorBuilder.fromBindingErrors(errors));
         }
-        users.set(userId, user);
+        userStorage.updateUser(userSearch.get().getId(), user);
         return ResponseEntity.ok(user);
-    }
-
-    int findUserById(int id) {
-        Optional<User> result = users.stream().filter(i -> i.getId() == id).findAny();
-        return result.isEmpty() ? -1 : users.indexOf(result.get());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
