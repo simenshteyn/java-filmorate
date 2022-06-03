@@ -51,7 +51,7 @@ abstract class UserStorageTest<T extends UserStorage> {
         assertEquals(1, storage.getAllUsers().size());
 
         // Remove user and check it
-        User removedUser = storage.removeUser(42);
+        User removedUser = storage.removeUser(user.getId());
         assertEquals("Testuser", removedUser.getName());
         assertTrue(storage.getAllUsers().isEmpty());
     }
@@ -76,8 +76,9 @@ abstract class UserStorageTest<T extends UserStorage> {
         // Update user with new name: unknown id should fail
         user.setName("Updated Testuser");
         assertNull(storage.updateUser(41, user));
-        storage.updateUser(42, user);
-        assertEquals("Updated Testuser", storage.getUser(42).getName());
+        storage.updateUser(user.getId(), user);
+        System.out.println(user);
+        assertEquals("Updated Testuser", storage.getUser(user.getId()).getName());
     }
 
     @Test
@@ -101,7 +102,7 @@ abstract class UserStorageTest<T extends UserStorage> {
         assertNull(storage.getUser(21));
 
         // Right ID should return User
-        assertEquals("Testuser", storage.getUser(42).getName());
+        assertEquals("Testuser", storage.getUser(user.getId()).getName());
     }
 
     @Test
@@ -112,7 +113,7 @@ abstract class UserStorageTest<T extends UserStorage> {
         user.setName("Testuser");
         user.setLogin("testuser");
         user.setEmail("test@user.com");
-        user.getFriends().add(13);
+        user.getFriends().add(2);
         user.setBirthday(LocalDate.of(1970, Month.JANUARY, 1));
 
         // Create second new user
@@ -121,7 +122,7 @@ abstract class UserStorageTest<T extends UserStorage> {
         user2.setName("Seconduser");
         user2.setLogin("seconduser");
         user2.setEmail("second@user.com");
-        user2.getFriends().add(42);
+        user2.getFriends().add(1);
         user2.setBirthday(LocalDate.of(1980, Month.JANUARY, 1));
 
         // Check storage is empty
@@ -133,8 +134,8 @@ abstract class UserStorageTest<T extends UserStorage> {
         assertEquals(2, storage.getAllUsers().size());
 
         // Check both are friends
-        assertEquals("Seconduser", storage.getUserFriends(42).get(0).getName());
-        assertEquals("Testuser", storage.getUserFriends(13).get(0).getName());
+        assertEquals("Seconduser", storage.getUserFriends(user.getId()).get(0).getName());
+        assertEquals("Testuser", storage.getUserFriends(user2.getId()).get(0).getName());
     }
 
     @Test

@@ -32,6 +32,7 @@ public interface UserStorage {
      */
     User updateUser(int userId, User user);
 
+
     /**
      * Get User from storage by ID.
      * @param userId ID of User to get from storage.

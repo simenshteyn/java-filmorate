@@ -37,6 +37,13 @@ public class UserController {
         return this.userStorage.getAllUsers();
     }
 
+    @GetMapping("/users/{id}")
+    public ResponseEntity<?> getUserById(@PathVariable int id) {
+        Optional<User> user = Optional.ofNullable(userStorage.getUser(id));
+        if (user.isEmpty()) throw new ResponseStatusException(NOT_FOUND, "Unable to find user");
+        return ResponseEntity.ok(user.get());
+    }
+
     @PutMapping("/users/{id}/friends/{friendId}")
     public ResponseEntity<?> makeFriends(@PathVariable int id, @PathVariable int friendId) {
         Optional<List<User>> friends = Optional.ofNullable(userService.makeFriends(id, friendId));
@@ -67,7 +74,7 @@ public class UserController {
         return ResponseEntity.ok(result);
     }
 
-    @PostMapping("/user")
+    @PostMapping("/users")
     public ResponseEntity<?> create(HttpServletRequest request, @Valid @RequestBody User user, Errors errors) {
         if (errors.hasErrors()) {
             log.info("Validation error with request: " + request.getRequestURI());
@@ -77,6 +84,20 @@ public class UserController {
         userStorage.addUser(user);
         return ResponseEntity.ok(user);
     }
+
+    @PutMapping("/users")
+    public ResponseEntity<?> updateUser(HttpServletRequest request, @Valid @RequestBody User user, Errors errors) {
+        if (errors.hasErrors()) {
+            log.info("Validation error with request: " + request.getRequestURI());
+            return ResponseEntity.badRequest()
+                    .body(FilmorateValidationErrorBuilder.fromBindingErrors(errors));
+        }
+        Optional<User> userSearch = Optional.ofNullable(userStorage.getUser(user.getId()));
+        if (userSearch.isEmpty()) throw new ResponseStatusException(NOT_FOUND, "Unable to find");
+        userStorage.updateUser(user.getId(), user);
+        return ResponseEntity.ok(userStorage.getUser(user.getId()));
+    }
+
 
     @PatchMapping("/user/{id}")
     public ResponseEntity<?> update(HttpServletRequest request, @Valid @RequestBody User user, @PathVariable int id, Errors errors) {
@@ -90,6 +111,7 @@ public class UserController {
         userStorage.updateUser(id, user);
         return ResponseEntity.ok(user);
     }
+
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)

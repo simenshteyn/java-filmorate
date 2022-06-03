@@ -18,7 +18,6 @@ public class Film {
     private String name;
     @Size(max=200, message = "Description size can't be more than 200 symbols")
     private String description;
-    @JsonProperty("release_date")
     @ReleaseDate(message = "Release date should be after 28.12.1895")
     private LocalDate releaseDate;
     @Positive(message = "Duration in seconds should be positive number")

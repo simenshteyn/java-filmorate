@@ -37,6 +37,28 @@ public class FilmController {
         return filmStorage.getAllFilms();
     }
 
+    @GetMapping("/films/{id}")
+    public ResponseEntity<?> getFilmById(@PathVariable int id) {
+        Optional<Film> film = Optional.ofNullable(filmStorage.getFilm(id));
+        if (film.isEmpty()) throw new ResponseStatusException(NOT_FOUND, "Unable to find");
+        return ResponseEntity.ok(film.get());
+
+    }
+
+    @PutMapping("/films")
+    public ResponseEntity<?> updateFilm(HttpServletRequest request, @Valid @RequestBody Film film, Errors errors) {
+        if (errors.hasErrors()) {
+            log.info("Validation error with request: " + request.getRequestURI());
+            return ResponseEntity.badRequest()
+                    .body(FilmorateValidationErrorBuilder.fromBindingErrors(errors));
+        }
+        Optional<Film> filmSearch = Optional.ofNullable(filmStorage.getFilm(film.getId()));
+        if (filmSearch.isEmpty()) throw new ResponseStatusException(NOT_FOUND, "Unable to find");
+        filmStorage.updateFilm(film.getId(), film);
+        return ResponseEntity.ok(film);
+    }
+
+
     @PutMapping("/films/{id}/like/{userId}")
     public ResponseEntity<?> addLike(@PathVariable int id, @PathVariable int userId) {
         Optional<Film> film = Optional.ofNullable(filmService.addLike(userId, id));
@@ -57,7 +79,7 @@ public class FilmController {
 
     }
 
-    @PostMapping("/film")
+    @PostMapping("/films")
     public ResponseEntity<?> create(HttpServletRequest request, @Valid @RequestBody Film film, Errors errors) {
         if (errors.hasErrors()) {
             log.info("Validation error with request: " + request.getRequestURI());

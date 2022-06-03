@@ -11,8 +11,10 @@ import java.util.stream.Collectors;
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
     private final List<Film> storage = new ArrayList<>();
+    private int idCounter = 0;
     @Override
     public Film addFilm(Film film) {
+        film.setId(++idCounter);
         storage.add(film);
         int filmIndex = storage.indexOf(film);
         return storage.get(filmIndex);

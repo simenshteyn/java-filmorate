@@ -6,10 +6,7 @@ import java.util.Set;
 
 import lombok.Data;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Past;
+import javax.validation.constraints.*;
 
 @Data
 public class User {
@@ -18,6 +15,9 @@ public class User {
     @NotBlank(message = "Email can't be blank")
     @NotNull(message = "Email can't be null")
     private String email;
+    @Pattern(regexp = "[A-Za-z\\d.-]{0,19}")
+    @NotBlank(message = "Login can't be blank")
+    @NotNull(message = "Login can't be null")
     private String login;
     private String name;
     @Past(message = "Birthday should be in the past")

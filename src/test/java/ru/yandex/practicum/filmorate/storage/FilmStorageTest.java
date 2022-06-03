@@ -22,7 +22,7 @@ abstract class FilmStorageTest<T extends FilmStorage> {
         // Create new film
         Film film = new Film();
         film.setName("film name");
-        film.setId(1);
+//        film.setId(1);
         film.setDescription("some description");
         film.setDuration(180);
         film.setReleaseDate(LocalDate.of(2020, Month.JANUARY, 1));
@@ -40,7 +40,7 @@ abstract class FilmStorageTest<T extends FilmStorage> {
         // Create new film
         Film film = new Film();
         film.setName("film name");
-        film.setId(42);
+//        film.setId(42);
         film.setDescription("some description");
         film.setDuration(180);
         film.setReleaseDate(LocalDate.of(2020, Month.JANUARY, 1));
@@ -56,9 +56,9 @@ abstract class FilmStorageTest<T extends FilmStorage> {
         assertNull(storage.removeFilm(21));
 
         // Should return remove film with empty storage
-        Film removedFilm = storage.removeFilm(42);
+        Film removedFilm = storage.removeFilm(film.getId());
         assertEquals("film name", removedFilm.getName());
-        assertEquals(42, removedFilm.getId());
+        assertEquals(film.getId(), removedFilm.getId());
         assertTrue(storage.getAllFilms().isEmpty());
     }
 
@@ -92,9 +92,8 @@ abstract class FilmStorageTest<T extends FilmStorage> {
         assertNull(storage.updateFilm(21, film2));
 
         // Should return updated with same storage size
-        Film updatedFilm = storage.updateFilm(33, film2);
+        Film updatedFilm = storage.updateFilm(film.getId(), film2);
         assertEquals("updated film name", updatedFilm.getName());
-        assertEquals(33, updatedFilm.getId());
         assertEquals(1, storage.getAllFilms().size());
     }
 
@@ -126,11 +125,11 @@ abstract class FilmStorageTest<T extends FilmStorage> {
         assertEquals(2, storage.getAllFilms().size());
 
         // Get first film by ID
-        Film result = storage.getFilm(33);
+        Film result = storage.getFilm(1);
         assertEquals("film name", result.getName());
 
         // Get second film by ID
-        Film result2 = storage.getFilm(42);
+        Film result2 = storage.getFilm(2);
         assertEquals("second some description", result2.getDescription());
 
         // Unknown index should return null

@@ -12,11 +12,14 @@ import java.util.stream.Collectors;
 @Component
 public class InMemoryUserStorage implements UserStorage {
     private final List<User> storage = new ArrayList<>();
+    private int idCounter = 0;
     @Override
     public User addUser(User user) {
-       storage.add(user);
-       int userIndex = storage.indexOf(user);
-       return storage.get(userIndex);
+        user.setId(++idCounter);
+        if (user.getName().isBlank()) user.setName(user.getLogin());
+        storage.add(user);
+        int userIndex = storage.indexOf(user);
+        return storage.get(userIndex);
     }
 
     @Override
