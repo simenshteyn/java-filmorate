@@ -33,7 +33,8 @@ public class FilmService {
      * @return Film object to which like was added or null.
      */
     public Film addLike(int userId, int filmId) {
-        Optional<User> user = Optional.ofNullable(userStorage.getUser(userId));
+//        Optional<User> user = Optional.ofNullable(userStorage.getUser(userId));
+        Optional<User> user = userStorage.getUser(userId);
 //        Optional<Film> film = Optional.ofNullable(filmStorage.getFilm(filmId));
         Optional<Film> film = filmStorage.getFilm(filmId);
         if (user.isPresent() && film.isPresent()) {
@@ -51,7 +52,8 @@ public class FilmService {
      * @return Film object from which like was removed or null.
      */
     public Film removeLike(int userId, int filmId) {
-        Optional<User> user = Optional.ofNullable(userStorage.getUser(userId));
+//        Optional<User> user = Optional.ofNullable(userStorage.getUser(userId));
+        Optional<User> user = userStorage.getUser(userId);
 //        Optional<Film> film = Optional.ofNullable(filmStorage.getFilm(filmId));
         Optional<Film> film = filmStorage.getFilm(filmId);
         if (user.isPresent() && film.isPresent()) {

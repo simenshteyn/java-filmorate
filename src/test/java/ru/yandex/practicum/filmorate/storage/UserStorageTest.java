@@ -6,6 +6,7 @@ import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -78,7 +79,7 @@ abstract class UserStorageTest<T extends UserStorage> {
         assertNull(storage.updateUser(41, user));
         storage.updateUser(user.getId(), user);
         System.out.println(user);
-        assertEquals("Updated Testuser", storage.getUser(user.getId()).getName());
+        assertEquals("Updated Testuser", storage.getUser(user.getId()).get().getName());
     }
 
     @Test
@@ -98,11 +99,11 @@ abstract class UserStorageTest<T extends UserStorage> {
         storage.addUser(user);
         assertEquals(1, storage.getAllUsers().size());
 
-        // Wrong ID should return null
-        assertNull(storage.getUser(21));
+        // Wrong ID should return Empty Optional
+        assertEquals(Optional.empty(), storage.getUser(21));
 
         // Right ID should return User
-        assertEquals("Testuser", storage.getUser(user.getId()).getName());
+        assertEquals("Testuser", storage.getUser(user.getId()).get().getName());
     }
 
     @Test

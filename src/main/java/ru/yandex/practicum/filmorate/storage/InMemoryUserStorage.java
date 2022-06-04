@@ -45,10 +45,10 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User getUser(int userId) {
+    public Optional<User> getUser(int userId) {
         int result = findUserIndexById(userId);
-        if (result != -1) return storage.get(result);
-        return null;
+        if (result != -1) return Optional.of(storage.get(result));
+        return Optional.empty();
     }
 
     @Override
@@ -57,7 +57,7 @@ public class InMemoryUserStorage implements UserStorage {
         List<User> friendsList = new ArrayList<>();
         if (result != -1) {
             Set<Integer> friendsIds = storage.get(result).getFriends();
-            friendsIds.forEach(i -> friendsList.add(getUser(i)));
+            friendsIds.forEach(i -> friendsList.add(getUser(i).get()));
             return friendsList;
         }
         return null;

@@ -43,35 +43,35 @@ class UserServiceTest {
     @Test
     void makeAndRemoveFriends() {
         // Check friends are null
-        assertEquals(0, storage.getUser(1).getFriends().size());
-        assertEquals(0, storage.getUser(2).getFriends().size());
+        assertEquals(0, storage.getUser(1).get().getFriends().size());
+        assertEquals(0, storage.getUser(2).get().getFriends().size());
 
-        assertEquals("First", storage.getUser(1).getName());
-        assertEquals("second", storage.getUser(2).getLogin());
+        assertEquals("First", storage.getUser(1).get().getName());
+        assertEquals("second", storage.getUser(2).get().getLogin());
 
         // Make and check firstUser and secondUser are friends
         List<User> result = service.makeFriends(1, 2);
-        assertEquals(1, storage.getUser(2).getFriends().size());
-        assertTrue(storage.getUser(2).getFriends().contains(1));
-        assertEquals(1, storage.getUser(1).getFriends().size());
-        assertTrue(storage.getUser(1).getFriends().contains(2));
+        assertEquals(1, storage.getUser(2).get().getFriends().size());
+        assertTrue(storage.getUser(2).get().getFriends().contains(1));
+        assertEquals(1, storage.getUser(1).get().getFriends().size());
+        assertTrue(storage.getUser(1).get().getFriends().contains(2));
         assertEquals(2, result.size());
 
         // Remove friendship of first and second user and check it
         List<User> removeResult = service.removeFriends(1, 2);
-        assertEquals(0, storage.getUser(1).getFriends().size());
-        assertEquals(0, storage.getUser(2).getFriends().size());
+        assertEquals(0, storage.getUser(1).get().getFriends().size());
+        assertEquals(0, storage.getUser(2).get().getFriends().size());
         assertEquals(2, removeResult.size());
     }
 
     @Test
     void showCommonFriends() {
         // Check friends are null
-        assertEquals(0, storage.getUser(1).getFriends().size());
-        assertEquals(0, storage.getUser(2).getFriends().size());
+        assertEquals(0, storage.getUser(1).get().getFriends().size());
+        assertEquals(0, storage.getUser(2).get().getFriends().size());
 
-        assertEquals("First", storage.getUser(1).getName());
-        assertEquals("second", storage.getUser(2).getLogin());
+        assertEquals("First", storage.getUser(1).get().getName());
+        assertEquals("second", storage.getUser(2).get().getLogin());
 
         // Add third common friend
         User thirdUser = new User();

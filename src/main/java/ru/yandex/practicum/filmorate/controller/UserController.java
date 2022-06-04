@@ -36,9 +36,7 @@ public class UserController {
 
     @GetMapping("/users/{id}")
     public ResponseEntity<?> getUserById(@PathVariable int id) {
-        Optional<User> user = Optional.ofNullable(userService.getUserById(id));
-        if (user.isEmpty()) throw new ResponseStatusException(NOT_FOUND, "Unable to find user");
-        return ResponseEntity.ok(user.get());
+        return ResponseEntity.ok(userService.getUserById(id));
     }
 
     @PutMapping("/users/{id}/friends/{friendId}")
