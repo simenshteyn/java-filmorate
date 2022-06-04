@@ -23,7 +23,6 @@ abstract class FilmStorageTest<T extends FilmStorage> {
         // Create new film
         Film film = new Film();
         film.setName("film name");
-//        film.setId(1);
         film.setDescription("some description");
         film.setDuration(180);
         film.setReleaseDate(LocalDate.of(2020, Month.JANUARY, 1));
@@ -41,7 +40,6 @@ abstract class FilmStorageTest<T extends FilmStorage> {
         // Create new film
         Film film = new Film();
         film.setName("film name");
-//        film.setId(42);
         film.setDescription("some description");
         film.setDuration(180);
         film.setReleaseDate(LocalDate.of(2020, Month.JANUARY, 1));
@@ -54,10 +52,10 @@ abstract class FilmStorageTest<T extends FilmStorage> {
         assertEquals(1, storage.getAllFilms().size());
 
         // Remove film by unknown ID should fail
-        assertNull(storage.removeFilm(21));
+        assertEquals(Optional.empty(), storage.removeFilm(21));
 
         // Should return remove film with empty storage
-        Film removedFilm = storage.removeFilm(film.getId());
+        Film removedFilm = storage.removeFilm(film.getId()).get();
         assertEquals("film name", removedFilm.getName());
         assertEquals(film.getId(), removedFilm.getId());
         assertTrue(storage.getAllFilms().isEmpty());

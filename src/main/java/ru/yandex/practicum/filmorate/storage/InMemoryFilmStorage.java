@@ -21,10 +21,10 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film removeFilm(int filmId) {
+    public Optional<Film> removeFilm(int filmId) {
         int result = findFilmIndexById(filmId);
-        if (result != -1) return storage.remove(result);
-        return null;
+        if (result != -1) return Optional.of(storage.remove(result));
+        return Optional.empty();
     }
 
     @Override
