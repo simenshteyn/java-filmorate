@@ -32,7 +32,6 @@ public class InMemoryFilmStorage implements FilmStorage {
         storage.clear();
     }
 
-
     @Override
     public Optional<Film> updateFilm(int filmId, Film film) {
         int result = findFilmIndexById(filmId);

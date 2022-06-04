@@ -33,11 +33,10 @@ public interface UserStorage {
      */
     Optional<User> updateUser(int userId, User user);
 
-
     /**
      * Get User from storage by ID.
      * @param userId ID of User to get from storage.
-     * @return User object found in storage with given ID or null if not found.
+     * @return User object found in storage with given ID or Empty Optional if not found.
      */
     Optional<User> getUser(int userId);
 

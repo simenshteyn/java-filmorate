@@ -12,6 +12,7 @@ import javax.validation.constraints.*;
 
 @Data
 public class Film {
+//    @Positive(message = "Film ID should be positive")
     private int id;
     @NotNull(message = "Name can't be null")
     @NotBlank(message = "Name can't be blanc")

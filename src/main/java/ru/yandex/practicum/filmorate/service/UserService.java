@@ -25,7 +25,7 @@ public class UserService {
      * Make friendship between two Users by ID.
      * @param firstUserId ID of first user.
      * @param secondUserId ID of second user
-     * @return List of Users if addition was successfull or null.
+     * @return List of Users if addition was successfull.
      */
     public List<User> makeFriends(int firstUserId, int secondUserId) {
         User first = storage.getUser(firstUserId).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Unable to find user"));
@@ -39,7 +39,7 @@ public class UserService {
      * Remove friendship between two Users by ID
      * @param firstUserId ID of first user.
      * @param secondUserId ID of second user.
-     * @return List of Users with removed friendship or null.
+     * @return List of Users with removed friendship.
      */
     public List<User> removeFriends(int firstUserId, int secondUserId) {
         User first = storage.getUser(firstUserId).orElseThrow(()-> new ResponseStatusException(NOT_FOUND, "Unable to find user"));

@@ -9,7 +9,6 @@ import ru.yandex.practicum.filmorate.storage.UserStorage;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.List;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -90,5 +89,4 @@ class UserServiceTest {
         List<User> result = service.showCommonFriends(1, 2);
         assertEquals(1, result.size());
     }
-
 }

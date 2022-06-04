@@ -29,7 +29,7 @@ public class FilmService {
      * Add like to film by User and Film IDs.
      * @param userId User ID.
      * @param filmId Film ID.
-     * @return Film object to which like was added or null.
+     * @return Film object to which like was added.
      */
     public Film addLike(int userId, int filmId) {
         User user = userStorage.getUser(userId).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Unable to find user"));
@@ -43,7 +43,7 @@ public class FilmService {
      * Remove like from Film by User ID.
      * @param userId User ID.
      * @param filmId Film ID.
-     * @return Film object from which like was removed or null.
+     * @return Film object from which like was removed.
      */
     public Film removeLike(int userId, int filmId) {
         User user = userStorage.getUser(userId).orElseThrow(()-> new ResponseStatusException(NOT_FOUND, "Unable to find user"));

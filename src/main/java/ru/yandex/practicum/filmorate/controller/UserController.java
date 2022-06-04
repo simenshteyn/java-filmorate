@@ -76,7 +76,6 @@ public class UserController {
         return ResponseEntity.ok(userService.updateUser(user.getId(), user));
     }
 
-
     @PatchMapping("/user/{id}")
     public ResponseEntity<?> update(HttpServletRequest request, @Valid @RequestBody User user, @PathVariable int id, Errors errors) {
         if (errors.hasErrors()) {

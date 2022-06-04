@@ -10,6 +10,7 @@ import javax.validation.constraints.*;
 
 @Data
 public class User {
+//    @Positive(message = "User ID should be positive")
     private int id;
     @Email(message = "Email should be in right format")
     @NotBlank(message = "Email can't be blank")

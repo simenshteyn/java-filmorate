@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -14,8 +15,8 @@ import ru.yandex.practicum.filmorate.validator.FilmorateValidationErrorBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
 import java.util.*;
-
 
 @RestController
 @Slf4j
@@ -58,9 +59,10 @@ public class FilmController {
         return ResponseEntity.ok(filmService.removeLike(userId, id));
     }
 
+    @Validated
     @GetMapping("/films/popular")
-    public ResponseEntity<?> getTopFilms(@RequestParam Optional<Integer> count) {
-        return ResponseEntity.ok(filmService.showTopFilms(count.orElse(10)));
+    public ResponseEntity<?> getTopFilms(@Positive @RequestParam(required = false, defaultValue = "10") int count) {
+        return ResponseEntity.ok(filmService.showTopFilms(count));
     }
 
     @PostMapping("/films")

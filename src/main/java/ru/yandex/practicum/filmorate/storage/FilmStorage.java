@@ -16,7 +16,7 @@ public interface FilmStorage {
     /**
      * Remove film from storage by ID.
      * @param filmId ID of Film object to remove.
-     * @return Removed Film or null if removement is not successfull.
+     * @return Removed Film or Empty Optional if removement is not successfull.
      */
     Optional<Film> removeFilm(int filmId);
 
