@@ -135,8 +135,8 @@ abstract class UserStorageTest<T extends UserStorage> {
         assertEquals(2, storage.getAllUsers().size());
 
         // Check both are friends
-        assertEquals("Seconduser", storage.getUserFriends(user.getId()).get(0).getName());
-        assertEquals("Testuser", storage.getUserFriends(user2.getId()).get(0).getName());
+        assertEquals("Seconduser", storage.getUserFriends(user.getId()).get().get(0).getName());
+        assertEquals("Testuser", storage.getUserFriends(user2.getId()).get().get(0).getName());
     }
 
     @Test

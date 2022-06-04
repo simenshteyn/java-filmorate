@@ -46,7 +46,7 @@ public interface UserStorage {
      * @param userId User ID.
      * @return List of User friends.
      */
-    List<User> getUserFriends(int userId);
+    Optional<List<User>> getUserFriends(int userId);
 
     /**
      * Get User objects from storage with limit and offset parameters.

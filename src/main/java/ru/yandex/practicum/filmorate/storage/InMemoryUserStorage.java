@@ -52,15 +52,15 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public List<User> getUserFriends(int userId) {
+    public Optional<List<User>> getUserFriends(int userId) {
         int result = findUserIndexById(userId);
         List<User> friendsList = new ArrayList<>();
         if (result != -1) {
             Set<Integer> friendsIds = storage.get(result).getFriends();
             friendsIds.forEach(i -> friendsList.add(getUser(i).get()));
-            return friendsList;
+            return Optional.of(friendsList);
         }
-        return null;
+        return Optional.empty();
     }
 
     @Override

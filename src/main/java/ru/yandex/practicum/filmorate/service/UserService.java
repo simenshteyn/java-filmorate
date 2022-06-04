@@ -72,7 +72,9 @@ public class UserService {
         return storage.getUser(id).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Unable to find user"));
     }
 
-    public List<User> getUserFriends(int id) { return storage.getUserFriends(id); }
+    public List<User> getUserFriends(int id) {
+        return storage.getUserFriends(id).orElseThrow(()-> new ResponseStatusException(NOT_FOUND, "Unable to find user"));
+    }
 
     public User addUser(User user) { return storage.addUser(user); }
 

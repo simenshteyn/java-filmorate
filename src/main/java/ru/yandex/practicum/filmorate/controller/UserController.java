@@ -51,9 +51,7 @@ public class UserController {
 
     @GetMapping("/users/{id}/friends")
     public ResponseEntity<?> getUserFriends(@PathVariable int id) {
-        Optional<List<User>> friends = Optional.ofNullable(userService.getUserFriends(id));
-        if (friends.isEmpty()) throw new ResponseStatusException(NOT_FOUND, "Unable to find user");
-        return ResponseEntity.ok(friends);
+        return ResponseEntity.ok(userService.getUserFriends(id));
     }
 
     @GetMapping("/users/{id}/friends/common/{otherId}")
