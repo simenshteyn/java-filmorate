@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
 import ru.yandex.practicum.filmorate.validator.FilmorateValidationErrorBuilder;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,22 +23,20 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @Slf4j
 public class UserController {
     private final UserService userService;
-    private final UserStorage userStorage;
 
     @Autowired
-    public UserController(UserService userService, UserStorage userStorage) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.userStorage = userStorage;
     }
 
     @GetMapping("/users")
     public List<User> getAllUsers() {
-        return this.userStorage.getAllUsers();
+        return userService.getAllUsers();
     }
 
     @GetMapping("/users/{id}")
     public ResponseEntity<?> getUserById(@PathVariable int id) {
-        Optional<User> user = Optional.ofNullable(userStorage.getUser(id));
+        Optional<User> user = Optional.ofNullable(userService.getUserById(id));
         if (user.isEmpty()) throw new ResponseStatusException(NOT_FOUND, "Unable to find user");
         return ResponseEntity.ok(user.get());
     }
@@ -60,7 +57,7 @@ public class UserController {
 
     @GetMapping("/users/{id}/friends")
     public ResponseEntity<?> getUserFriends(@PathVariable int id) {
-        Optional<List<User>> friends = Optional.ofNullable(userStorage.getUserFriends(id));
+        Optional<List<User>> friends = Optional.ofNullable(userService.getUserFriends(id));
         if (friends.isEmpty()) throw new ResponseStatusException(NOT_FOUND, "Unable to find user");
         return ResponseEntity.ok(friends);
     }
@@ -70,7 +67,7 @@ public class UserController {
         Optional<Set<Integer>> friendsIds = Optional.ofNullable(userService.showCommonFriends(id, otherId));
         if (friendsIds.isEmpty()) throw new ResponseStatusException(NOT_FOUND, "Unable to find user");
         List<User> result = new ArrayList<>();
-        friendsIds.get().forEach(i -> result.add(userStorage.getUser(i)));
+        friendsIds.get().forEach(i -> result.add(userService.getUserById(i)));
         return ResponseEntity.ok(result);
     }
 
@@ -81,7 +78,7 @@ public class UserController {
             return ResponseEntity.badRequest()
                 .body(FilmorateValidationErrorBuilder.fromBindingErrors(errors));
         }
-        userStorage.addUser(user);
+        userService.addUser(user);
         return ResponseEntity.ok(user);
     }
 
@@ -92,23 +89,23 @@ public class UserController {
             return ResponseEntity.badRequest()
                     .body(FilmorateValidationErrorBuilder.fromBindingErrors(errors));
         }
-        Optional<User> userSearch = Optional.ofNullable(userStorage.getUser(user.getId()));
+        Optional<User> userSearch = Optional.ofNullable(userService.getUserById(user.getId()));
         if (userSearch.isEmpty()) throw new ResponseStatusException(NOT_FOUND, "Unable to find");
-        userStorage.updateUser(user.getId(), user);
-        return ResponseEntity.ok(userStorage.getUser(user.getId()));
+        userService.updateUser(user.getId(), user);
+        return ResponseEntity.ok(userService.getUserById(user.getId()));
     }
 
 
     @PatchMapping("/user/{id}")
     public ResponseEntity<?> update(HttpServletRequest request, @Valid @RequestBody User user, @PathVariable int id, Errors errors) {
-        Optional<User> userSearch = Optional.ofNullable(userStorage.getUser(id));
+        Optional<User> userSearch = Optional.ofNullable(userService.getUserById(id));
         if (userSearch.isEmpty()) throw new ResponseStatusException(NOT_FOUND, "Unable to find");
         if (errors.hasErrors()) {
             log.info("Validation error with request: " + request.getRequestURI());
             return ResponseEntity.badRequest()
                     .body(FilmorateValidationErrorBuilder.fromBindingErrors(errors));
         }
-        userStorage.updateUser(id, user);
+        userService.updateUser(id, user);
         return ResponseEntity.ok(user);
     }
 

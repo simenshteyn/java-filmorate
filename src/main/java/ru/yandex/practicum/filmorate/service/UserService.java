@@ -69,4 +69,14 @@ public class UserService {
         }
         return null;
     }
+
+    public List<User> getAllUsers() { return storage.getAllUsers(); }
+
+    public User getUserById(int id) { return storage.getUser(id); }
+
+    public List<User> getUserFriends(int id) { return storage.getUserFriends(id); }
+
+    public User addUser(User user) { return storage.addUser(user); }
+
+    public User updateUser(int id, User user) { return storage.updateUser(id, user); }
 }
