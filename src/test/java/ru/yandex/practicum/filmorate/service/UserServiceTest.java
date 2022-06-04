@@ -87,10 +87,8 @@ class UserServiceTest {
         service.makeFriends(2, 3);
 
         // Third friend should be common for first and second
-        Set<Integer> result = service.showCommonFriends(1, 2);
+        List<User> result = service.showCommonFriends(1, 2);
         assertEquals(1, result.size());
-
-
     }
 
 }

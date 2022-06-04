@@ -6,9 +6,8 @@ import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -29,14 +28,11 @@ public class UserService {
      * @return List of Users if addition was successfull or null.
      */
     public List<User> makeFriends(int firstUserId, int secondUserId) {
-        Optional<User> first = storage.getUser(firstUserId);
-        Optional<User> second = storage.getUser(secondUserId);
-        if (first.isPresent() && second.isPresent()) {
-            first.get().getFriends().add(secondUserId);
-            second.get().getFriends().add(firstUserId);
-            return List.of(first.get(), second.get());
-        }
-        return null;
+        User first = storage.getUser(firstUserId).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Unable to find user"));
+        User second = storage.getUser(secondUserId).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Unable to find user"));
+        first.getFriends().add(secondUserId);
+        second.getFriends().add(firstUserId);
+        return List.of(first, second);
     }
 
     /**
@@ -46,14 +42,11 @@ public class UserService {
      * @return List of Users with removed friendship or null.
      */
     public List<User> removeFriends(int firstUserId, int secondUserId) {
-        Optional<User> first = storage.getUser(firstUserId);
-        Optional<User> second = storage.getUser(secondUserId);
-        if (first.isPresent() && second.isPresent()) {
-            first.get().getFriends().remove(secondUserId);
-            second.get().getFriends().remove(firstUserId);
-            return List.of(first.get(), second.get());
-        }
-        return null;
+        User first = storage.getUser(firstUserId).orElseThrow(()-> new ResponseStatusException(NOT_FOUND, "Unable to find user"));
+        User second = storage.getUser(secondUserId).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Unable to find user"));
+        first.getFriends().remove(secondUserId);
+        second.getFriends().remove(firstUserId);
+        return List.of(first, second);
     }
 
     /**
@@ -62,15 +55,15 @@ public class UserService {
      * @param secondUserId ID of second user.
      * @return Set of common friends IDs.
      */
-    public Set<Integer> showCommonFriends(int firstUserId, int secondUserId) {
-        Optional<User> first = storage.getUser(firstUserId);
-        Optional<User> second = storage.getUser(secondUserId);
-        if (first.isPresent() && second.isPresent()) {
-            return first.get().getFriends().stream()
-                    .filter(second.get().getFriends()::contains)
-                    .collect(Collectors.toSet());
-        }
-        return null;
+    public List<User> showCommonFriends(int firstUserId, int secondUserId) {
+        User first = storage.getUser(firstUserId).orElseThrow(()-> new ResponseStatusException(NOT_FOUND, "Unable to find user"));
+        User second = storage.getUser(secondUserId).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Unable to find user"));
+        List<User> result = new ArrayList<>();
+        first.getFriends().stream()
+                .filter(second.getFriends()::contains)
+                .collect(Collectors.toSet())
+                .forEach(i -> result.add(getUserById(i)));
+        return result;
     }
 
     public List<User> getAllUsers() { return storage.getAllUsers(); }

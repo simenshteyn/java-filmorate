@@ -41,16 +41,12 @@ public class UserController {
 
     @PutMapping("/users/{id}/friends/{friendId}")
     public ResponseEntity<?> makeFriends(@PathVariable int id, @PathVariable int friendId) {
-        Optional<List<User>> friends = Optional.ofNullable(userService.makeFriends(id, friendId));
-        if (friends.isEmpty()) throw new ResponseStatusException(NOT_FOUND, "Unable to find user");
-        return ResponseEntity.ok(friends);
+        return ResponseEntity.ok(userService.makeFriends(id, friendId));
     }
 
     @DeleteMapping("/users/{id}/friends/{friendId}")
     public ResponseEntity<?> removeFriends(@PathVariable int id, @PathVariable int friendId) {
-        Optional<List<User>> friends = Optional.ofNullable(userService.removeFriends(id, friendId));
-        if (friends.isEmpty()) throw new ResponseStatusException(NOT_FOUND, "Unable to find user");
-        return ResponseEntity.ok(friends);
+        return ResponseEntity.ok(userService.removeFriends(id, friendId));
     }
 
     @GetMapping("/users/{id}/friends")
@@ -62,11 +58,7 @@ public class UserController {
 
     @GetMapping("/users/{id}/friends/common/{otherId}")
     public ResponseEntity<?> getCommonFriends(@PathVariable int id, @PathVariable int otherId) {
-        Optional<Set<Integer>> friendsIds = Optional.ofNullable(userService.showCommonFriends(id, otherId));
-        if (friendsIds.isEmpty()) throw new ResponseStatusException(NOT_FOUND, "Unable to find user");
-        List<User> result = new ArrayList<>();
-        friendsIds.get().forEach(i -> result.add(userService.getUserById(i)));
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(userService.showCommonFriends(id, otherId));
     }
 
     @PostMapping("/users")
