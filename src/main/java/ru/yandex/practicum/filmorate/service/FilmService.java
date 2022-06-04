@@ -33,16 +33,11 @@ public class FilmService {
      * @return Film object to which like was added or null.
      */
     public Film addLike(int userId, int filmId) {
-//        Optional<User> user = Optional.ofNullable(userStorage.getUser(userId));
-        Optional<User> user = userStorage.getUser(userId);
-//        Optional<Film> film = Optional.ofNullable(filmStorage.getFilm(filmId));
-        Optional<Film> film = filmStorage.getFilm(filmId);
-        if (user.isPresent() && film.isPresent()) {
-            film.get().getUsersLikedIds().add(userId);
-            user.get().getFilmsLiked().add(filmId);
-            return film.get();
-        }
-        return null;
+        User user = userStorage.getUser(userId).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Unable to find user"));
+        Film film = filmStorage.getFilm(filmId).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Unable to find film"));
+        film.getUsersLikedIds().add(userId);
+        user.getFilmsLiked().add(filmId);
+        return film;
     }
 
     /**

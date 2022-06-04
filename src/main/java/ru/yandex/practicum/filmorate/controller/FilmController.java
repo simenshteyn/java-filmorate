@@ -52,9 +52,7 @@ public class FilmController {
 
     @PutMapping("/films/{id}/like/{userId}")
     public ResponseEntity<?> addLike(@PathVariable int id, @PathVariable int userId) {
-        Optional<Film> film = Optional.ofNullable(filmService.addLike(userId, id));
-        if (film.isEmpty()) throw new ResponseStatusException(NOT_FOUND, "Unable to find");
-        return ResponseEntity.ok(film.get());
+        return ResponseEntity.ok(filmService.addLike(userId, id));
     }
 
     @DeleteMapping("/films/{id}/like/{userId}")
