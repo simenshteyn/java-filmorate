@@ -71,4 +71,11 @@ public class FilmService {
                 .collect(Collectors.toList());
     }
 
+    public List<Film> getAllFilms() { return filmStorage.getAllFilms(); }
+
+    public Film getFilmById(int id) { return filmStorage.getFilm(id); }
+
+    public Film updateFilm(int id, Film film) { return filmStorage.updateFilm(id, film); }
+
+    public Film addFilm(Film film) { return filmStorage.addFilm(film); }
 }

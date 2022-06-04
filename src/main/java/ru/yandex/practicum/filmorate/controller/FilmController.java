@@ -24,25 +24,22 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @Slf4j
 public class FilmController {
     private final FilmService filmService;
-    private final FilmStorage filmStorage;
 
     @Autowired
-    public FilmController(FilmService filmService, FilmStorage filmStorage) {
+    public FilmController(FilmService filmService) {
         this.filmService = filmService;
-        this.filmStorage = filmStorage;
     }
 
     @GetMapping("/films")
     public List<Film> getAllPosts() {
-        return filmStorage.getAllFilms();
+        return filmService.getAllFilms();
     }
 
     @GetMapping("/films/{id}")
     public ResponseEntity<?> getFilmById(@PathVariable int id) {
-        Optional<Film> film = Optional.ofNullable(filmStorage.getFilm(id));
+        Optional<Film> film = Optional.ofNullable(filmService.getFilmById(id));
         if (film.isEmpty()) throw new ResponseStatusException(NOT_FOUND, "Unable to find");
         return ResponseEntity.ok(film.get());
-
     }
 
     @PutMapping("/films")
@@ -52,9 +49,9 @@ public class FilmController {
             return ResponseEntity.badRequest()
                     .body(FilmorateValidationErrorBuilder.fromBindingErrors(errors));
         }
-        Optional<Film> filmSearch = Optional.ofNullable(filmStorage.getFilm(film.getId()));
+        Optional<Film> filmSearch = Optional.ofNullable(filmService.getFilmById(film.getId()));
         if (filmSearch.isEmpty()) throw new ResponseStatusException(NOT_FOUND, "Unable to find");
-        filmStorage.updateFilm(film.getId(), film);
+        filmService.updateFilm(film.getId(), film);
         return ResponseEntity.ok(film);
     }
 
@@ -76,7 +73,6 @@ public class FilmController {
     @GetMapping("/films/popular")
     public ResponseEntity<?> getTopFilms(@RequestParam Optional<Integer> count) {
         return ResponseEntity.ok(filmService.showTopFilms(count.orElse(10)));
-
     }
 
     @PostMapping("/films")
@@ -86,20 +82,20 @@ public class FilmController {
             return ResponseEntity.badRequest()
                 .body(FilmorateValidationErrorBuilder.fromBindingErrors(errors));
         }
-        filmStorage.addFilm(film);
+        filmService.addFilm(film);
         return ResponseEntity.ok(film);
     }
 
     @PatchMapping("/film/{id}")
     public ResponseEntity<?> update(HttpServletRequest request, @Valid @RequestBody Film film, @PathVariable int id, Errors errors) {
-        Optional<Film> filmSearch = Optional.ofNullable(filmStorage.getFilm(id));
+        Optional<Film> filmSearch = Optional.ofNullable(filmService.getFilmById(id));
         if (filmSearch.isEmpty()) throw new ResponseStatusException(NOT_FOUND, "Unable to find");
         if (errors.hasErrors()) {
             log.info("Validation error with request: " + request.getRequestURI());
             return ResponseEntity.badRequest()
                     .body(FilmorateValidationErrorBuilder.fromBindingErrors(errors));
         }
-        filmStorage.updateFilm(id, film);
+        filmService.updateFilm(id, film);
         return ResponseEntity.ok(film);
     }
 
