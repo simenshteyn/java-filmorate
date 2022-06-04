@@ -8,7 +8,6 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.validator.FilmorateValidationErrorBuilder;
@@ -16,8 +15,6 @@ import ru.yandex.practicum.filmorate.validator.FilmorateValidationErrorBuilder;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.*;
-
-import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @RestController
 @Slf4j
@@ -82,17 +79,13 @@ public class UserController {
 
     @PatchMapping("/user/{id}")
     public ResponseEntity<?> update(HttpServletRequest request, @Valid @RequestBody User user, @PathVariable int id, Errors errors) {
-        Optional<User> userSearch = Optional.ofNullable(userService.getUserById(id));
-        if (userSearch.isEmpty()) throw new ResponseStatusException(NOT_FOUND, "Unable to find");
         if (errors.hasErrors()) {
             log.info("Validation error with request: " + request.getRequestURI());
             return ResponseEntity.badRequest()
                     .body(FilmorateValidationErrorBuilder.fromBindingErrors(errors));
         }
-        userService.updateUser(id, user);
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok(userService.updateUser(id, user));
     }
-
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
