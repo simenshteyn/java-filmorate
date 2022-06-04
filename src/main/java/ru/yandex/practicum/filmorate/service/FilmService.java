@@ -9,7 +9,6 @@ import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.Comparator.comparing;
@@ -47,16 +46,11 @@ public class FilmService {
      * @return Film object from which like was removed or null.
      */
     public Film removeLike(int userId, int filmId) {
-//        Optional<User> user = Optional.ofNullable(userStorage.getUser(userId));
-        Optional<User> user = userStorage.getUser(userId);
-//        Optional<Film> film = Optional.ofNullable(filmStorage.getFilm(filmId));
-        Optional<Film> film = filmStorage.getFilm(filmId);
-        if (user.isPresent() && film.isPresent()) {
-            film.get().getUsersLikedIds().remove(userId);
-            user.get().getFilmsLiked().remove(filmId);
-            return film.get();
-        }
-        return null;
+        User user = userStorage.getUser(userId).orElseThrow(()-> new ResponseStatusException(NOT_FOUND, "Unable to find user"));
+        Film film = filmStorage.getFilm(filmId).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Unable to find film"));
+        film.getUsersLikedIds().remove(userId);
+        user.getFilmsLiked().remove(filmId);
+        return film;
     }
 
     /**

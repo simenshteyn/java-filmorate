@@ -8,7 +8,6 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.validator.FilmorateValidationErrorBuilder;
@@ -17,7 +16,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.*;
 
-import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @RestController
 @Slf4j
@@ -57,9 +55,7 @@ public class FilmController {
 
     @DeleteMapping("/films/{id}/like/{userId}")
     public ResponseEntity<?> removeLike(@PathVariable int id, @PathVariable int userId) {
-        Optional<Film> film = Optional.ofNullable(filmService.removeLike(userId, id));
-        if (film.isEmpty()) throw new ResponseStatusException(NOT_FOUND, "Unable to find");
-        return ResponseEntity.ok(film.get());
+        return ResponseEntity.ok(filmService.removeLike(userId, id));
     }
 
     @GetMapping("/films/popular")
