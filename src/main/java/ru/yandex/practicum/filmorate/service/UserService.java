@@ -78,5 +78,7 @@ public class UserService {
 
     public User addUser(User user) { return storage.addUser(user); }
 
-    public User updateUser(int id, User user) { return storage.updateUser(id, user); }
+    public User updateUser(int id, User user) {
+        return storage.updateUser(id, user).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Unable to find user"));
+    }
 }

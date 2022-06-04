@@ -31,7 +31,7 @@ public interface UserStorage {
      * @param user User object to update with.
      * @return Updated User object.
      */
-    User updateUser(int userId, User user);
+    Optional<User> updateUser(int userId, User user);
 
 
     /**

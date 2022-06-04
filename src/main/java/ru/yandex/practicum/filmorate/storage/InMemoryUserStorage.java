@@ -35,13 +35,13 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User updateUser(int userId, User user) {
+    public Optional<User> updateUser(int userId, User user) {
         int result = findUserIndexById(userId);
         if (result != -1) {
             storage.set(result, user);
-            return storage.get(result);
+            return Optional.of(storage.get(result));
         }
-        return null;
+        return Optional.empty();
     }
 
     @Override

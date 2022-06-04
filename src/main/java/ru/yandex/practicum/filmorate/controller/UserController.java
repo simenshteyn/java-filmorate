@@ -66,8 +66,7 @@ public class UserController {
             return ResponseEntity.badRequest()
                 .body(FilmorateValidationErrorBuilder.fromBindingErrors(errors));
         }
-        userService.addUser(user);
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok(userService.addUser(user));
     }
 
     @PutMapping("/users")
@@ -77,10 +76,7 @@ public class UserController {
             return ResponseEntity.badRequest()
                     .body(FilmorateValidationErrorBuilder.fromBindingErrors(errors));
         }
-        Optional<User> userSearch = Optional.ofNullable(userService.getUserById(user.getId()));
-        if (userSearch.isEmpty()) throw new ResponseStatusException(NOT_FOUND, "Unable to find");
-        userService.updateUser(user.getId(), user);
-        return ResponseEntity.ok(userService.getUserById(user.getId()));
+        return ResponseEntity.ok(userService.updateUser(user.getId(), user));
     }
 
 

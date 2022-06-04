@@ -76,7 +76,7 @@ abstract class UserStorageTest<T extends UserStorage> {
 
         // Update user with new name: unknown id should fail
         user.setName("Updated Testuser");
-        assertNull(storage.updateUser(41, user));
+        assertEquals(Optional.empty(), storage.updateUser(41, user));
         storage.updateUser(user.getId(), user);
         System.out.println(user);
         assertEquals("Updated Testuser", storage.getUser(user.getId()).get().getName());
