@@ -6,6 +6,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -125,15 +126,15 @@ abstract class FilmStorageTest<T extends FilmStorage> {
         assertEquals(2, storage.getAllFilms().size());
 
         // Get first film by ID
-        Film result = storage.getFilm(1);
+        Film result = storage.getFilm(1).get();
         assertEquals("film name", result.getName());
 
         // Get second film by ID
-        Film result2 = storage.getFilm(2);
+        Film result2 = storage.getFilm(2).get();
         assertEquals("second some description", result2.getDescription());
 
         // Unknown index should return null
-        assertNull(storage.getFilm(99));
+        assertEquals(Optional.empty(), storage.getFilm(99));
     }
 
     @Test

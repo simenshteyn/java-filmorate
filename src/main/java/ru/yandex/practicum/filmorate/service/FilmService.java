@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
@@ -12,6 +13,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.Comparator.comparing;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Service
 public class FilmService {
@@ -32,7 +34,8 @@ public class FilmService {
      */
     public Film addLike(int userId, int filmId) {
         Optional<User> user = Optional.ofNullable(userStorage.getUser(userId));
-        Optional<Film> film = Optional.ofNullable(filmStorage.getFilm(filmId));
+//        Optional<Film> film = Optional.ofNullable(filmStorage.getFilm(filmId));
+        Optional<Film> film = filmStorage.getFilm(filmId);
         if (user.isPresent() && film.isPresent()) {
             film.get().getUsersLikedIds().add(userId);
             user.get().getFilmsLiked().add(filmId);
@@ -49,7 +52,8 @@ public class FilmService {
      */
     public Film removeLike(int userId, int filmId) {
         Optional<User> user = Optional.ofNullable(userStorage.getUser(userId));
-        Optional<Film> film = Optional.ofNullable(filmStorage.getFilm(filmId));
+//        Optional<Film> film = Optional.ofNullable(filmStorage.getFilm(filmId));
+        Optional<Film> film = filmStorage.getFilm(filmId);
         if (user.isPresent() && film.isPresent()) {
             film.get().getUsersLikedIds().remove(userId);
             user.get().getFilmsLiked().remove(filmId);
@@ -73,7 +77,9 @@ public class FilmService {
 
     public List<Film> getAllFilms() { return filmStorage.getAllFilms(); }
 
-    public Film getFilmById(int id) { return filmStorage.getFilm(id); }
+    public Film getFilmById(int id) {
+        return filmStorage.getFilm(id).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Unable to find"));
+    }
 
     public Film updateFilm(int id, Film film) { return filmStorage.updateFilm(id, film); }
 

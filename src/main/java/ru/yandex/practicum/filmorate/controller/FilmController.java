@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.validator.FilmorateValidationErrorBuilder;
 
 import javax.servlet.http.HttpServletRequest;
@@ -37,9 +36,10 @@ public class FilmController {
 
     @GetMapping("/films/{id}")
     public ResponseEntity<?> getFilmById(@PathVariable int id) {
-        Optional<Film> film = Optional.ofNullable(filmService.getFilmById(id));
-        if (film.isEmpty()) throw new ResponseStatusException(NOT_FOUND, "Unable to find");
-        return ResponseEntity.ok(film.get());
+//        Optional<Film> film = Optional.ofNullable(filmService.getFilmById(id));
+//        if (film.isEmpty()) throw new ResponseStatusException(NOT_FOUND, "Unable to find");
+//        return ResponseEntity.ok(film.get());
+        return ResponseEntity.ok(filmService.getFilmById(id));
     }
 
     @PutMapping("/films")
@@ -49,8 +49,11 @@ public class FilmController {
             return ResponseEntity.badRequest()
                     .body(FilmorateValidationErrorBuilder.fromBindingErrors(errors));
         }
-        Optional<Film> filmSearch = Optional.ofNullable(filmService.getFilmById(film.getId()));
-        if (filmSearch.isEmpty()) throw new ResponseStatusException(NOT_FOUND, "Unable to find");
+//        Optional<Film> filmSearch = Optional.ofNullable(filmService.getFilmById(film.getId()));
+//        if (filmSearch.isEmpty()) throw new ResponseStatusException(NOT_FOUND, "Unable to find");
+//        filmService.updateFilm(film.getId(), film);
+//        return ResponseEntity.ok(film);
+        Film filmSearch = filmService.getFilmById(film.getId()); // could be BETTER
         filmService.updateFilm(film.getId(), film);
         return ResponseEntity.ok(film);
     }

@@ -44,10 +44,10 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film getFilm(int filmId) {
+    public Optional<Film> getFilm(int filmId) {
         int result = findFilmIndexById(filmId);
-        if (result != -1) return storage.get(result);
-        return null;
+        if (result != -1) return Optional.of(storage.get(result));
+        return Optional.empty();
     }
 
     @Override

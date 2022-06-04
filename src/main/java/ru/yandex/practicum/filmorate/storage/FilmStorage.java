@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface FilmStorage {
     /**
@@ -37,7 +38,7 @@ public interface FilmStorage {
      * @param filmId Film ID to search in storage.
      * @return Film object if film is found or null if not.
      */
-    Film getFilm(int filmId);
+    Optional<Film> getFilm(int filmId);
 
     /**
      * Get Film objects from storage.

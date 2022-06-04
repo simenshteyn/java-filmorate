@@ -51,17 +51,17 @@ class FilmServiceTest {
     @Test
     void addLikeAndRemoveLike() {
         // Check user liked and film liked fields are empty
-        assertEquals(0, filmStorage.getFilm(1).getUsersLikedIds().size());
+        assertEquals(0, filmStorage.getFilm(1).get().getUsersLikedIds().size());
         assertEquals(0, userStorage.getUser(1).getFilmsLiked().size());
 
         //Add like from user to film
         filmService.addLike(1, 1);
-        assertEquals(1, filmStorage.getFilm(1).getUsersLikedIds().size());
+        assertEquals(1, filmStorage.getFilm(1).get().getUsersLikedIds().size());
         assertEquals(1, userStorage.getUser(1).getFilmsLiked().size());
 
         // Remove like from film and check
         filmService.removeLike(1, 1);
-        assertEquals(0, filmStorage.getFilm(1).getUsersLikedIds().size());
+        assertEquals(0, filmStorage.getFilm(1).get().getUsersLikedIds().size());
         assertEquals(0, userStorage.getUser(1).getFilmsLiked().size());
     }
 
