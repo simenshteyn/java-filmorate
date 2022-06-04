@@ -31,7 +31,7 @@ public interface FilmStorage {
      * @param film New Film object to replace old one.
      * @return Updated Film object.
      */
-    Film updateFilm(int filmId, Film film);
+    Optional<Film> updateFilm(int filmId, Film film);
 
     /**
      * Get Film object from storage by ID.

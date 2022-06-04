@@ -90,10 +90,10 @@ abstract class FilmStorageTest<T extends FilmStorage> {
         assertEquals(1, storage.getAllFilms().size());
 
         // Update film by unknown ID should fail
-        assertNull(storage.updateFilm(21, film2));
+        assertEquals(Optional.empty(), storage.updateFilm(21, film2));
 
         // Should return updated with same storage size
-        Film updatedFilm = storage.updateFilm(film.getId(), film2);
+        Film updatedFilm = storage.updateFilm(film.getId(), film2).get();
         assertEquals("updated film name", updatedFilm.getName());
         assertEquals(1, storage.getAllFilms().size());
     }

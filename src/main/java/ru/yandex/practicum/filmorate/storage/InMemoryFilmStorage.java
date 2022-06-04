@@ -34,13 +34,13 @@ public class InMemoryFilmStorage implements FilmStorage {
 
 
     @Override
-    public Film updateFilm(int filmId, Film film) {
+    public Optional<Film> updateFilm(int filmId, Film film) {
         int result = findFilmIndexById(filmId);
         if (result != -1) {
             storage.set(result, film);
-            return storage.get(result);
+            return Optional.of(storage.get(result));
         }
-        return null;
+        return Optional.empty();
     }
 
     @Override

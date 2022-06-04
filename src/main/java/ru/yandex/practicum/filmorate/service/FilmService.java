@@ -78,10 +78,12 @@ public class FilmService {
     public List<Film> getAllFilms() { return filmStorage.getAllFilms(); }
 
     public Film getFilmById(int id) {
-        return filmStorage.getFilm(id).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Unable to find"));
+        return filmStorage.getFilm(id).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Unable to find film"));
     }
 
-    public Film updateFilm(int id, Film film) { return filmStorage.updateFilm(id, film); }
+    public Film updateFilm(int id, Film film) {
+        return filmStorage.updateFilm(id, film).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Unable to find film"));
+    }
 
     public Film addFilm(Film film) { return filmStorage.addFilm(film); }
 }
