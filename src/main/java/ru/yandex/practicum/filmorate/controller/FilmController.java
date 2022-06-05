@@ -17,6 +17,7 @@ import java.util.*;
 
 @RestController
 @Slf4j
+@Validated
 public class FilmController {
     private final FilmService filmService;
 
@@ -57,7 +58,6 @@ public class FilmController {
     }
 
     @GetMapping("/films/popular")
-    @Validated
     public ResponseEntity<?> getTopFilms(@Positive @RequestParam(required = false, defaultValue = "10") int count) {
         return ResponseEntity.ok(filmService.showTopFilms(count));
     }
