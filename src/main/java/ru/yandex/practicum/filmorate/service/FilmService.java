@@ -33,7 +33,7 @@ public class FilmService {
      */
     public Film addLike(int userId, int filmId) {
         User user = userStorage.getUser(userId).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Unable to find user"));
-        Film film = filmStorage.getFilm(filmId).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Unable to find film"));
+        Film film = getFilmById(filmId);
         film.getUsersLikedIds().add(userId);
         user.getFilmsLiked().add(filmId);
         return film;
@@ -47,7 +47,7 @@ public class FilmService {
      */
     public Film removeLike(int userId, int filmId) {
         User user = userStorage.getUser(userId).orElseThrow(()-> new ResponseStatusException(NOT_FOUND, "Unable to find user"));
-        Film film = filmStorage.getFilm(filmId).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Unable to find film"));
+        Film film = getFilmById(filmId);
         film.getUsersLikedIds().remove(userId);
         user.getFilmsLiked().remove(filmId);
         return film;

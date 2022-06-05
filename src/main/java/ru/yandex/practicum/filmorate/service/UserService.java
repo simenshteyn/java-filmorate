@@ -28,8 +28,8 @@ public class UserService {
      * @return List of Users if addition was successfull.
      */
     public List<User> makeFriends(int firstUserId, int secondUserId) {
-        User first = storage.getUser(firstUserId).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Unable to find user"));
-        User second = storage.getUser(secondUserId).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Unable to find user"));
+        User first = getUserById(firstUserId);
+        User second = getUserById(secondUserId);
         first.getFriends().add(secondUserId);
         second.getFriends().add(firstUserId);
         return List.of(first, second);
@@ -42,8 +42,8 @@ public class UserService {
      * @return List of Users with removed friendship.
      */
     public List<User> removeFriends(int firstUserId, int secondUserId) {
-        User first = storage.getUser(firstUserId).orElseThrow(()-> new ResponseStatusException(NOT_FOUND, "Unable to find user"));
-        User second = storage.getUser(secondUserId).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Unable to find user"));
+        User first = getUserById(firstUserId);
+        User second = getUserById(secondUserId);
         first.getFriends().remove(secondUserId);
         second.getFriends().remove(firstUserId);
         return List.of(first, second);
@@ -56,8 +56,8 @@ public class UserService {
      * @return Set of common friends IDs.
      */
     public List<User> showCommonFriends(int firstUserId, int secondUserId) {
-        User first = storage.getUser(firstUserId).orElseThrow(()-> new ResponseStatusException(NOT_FOUND, "Unable to find user"));
-        User second = storage.getUser(secondUserId).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Unable to find user"));
+        User first = getUserById(firstUserId);
+        User second = getUserById(secondUserId);
         List<User> result = new ArrayList<>();
         first.getFriends().stream()
                 .filter(second.getFriends()::contains)
