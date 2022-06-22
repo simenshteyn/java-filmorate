@@ -1,2 +1,3 @@
 # java-filmorate
-Template repository for Filmorate project.
+## Схема хранилища
+![Database scheme](/docs/Java_10_fp.png)
