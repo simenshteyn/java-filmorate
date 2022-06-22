@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.model;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -12,7 +13,6 @@ import javax.validation.constraints.*;
 
 @Data
 public class Film {
-//    @Positive(message = "Film ID should be positive")
     private int id;
     @NotNull(message = "Name can't be null")
     @NotBlank(message = "Name can't be blanc")
@@ -25,4 +25,7 @@ public class Film {
     private int duration;
     private Set<Integer> usersLikedIds = new HashSet<>();
     public int countUsersLiked() { return usersLikedIds.size(); }
+    private Set<Genre> genres = new HashSet<>();
+    private Rating rating;
 }
+

@@ -1,7 +1,9 @@
 package ru.yandex.practicum.filmorate.model;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import lombok.Data;
@@ -10,7 +12,6 @@ import javax.validation.constraints.*;
 
 @Data
 public class User {
-//    @Positive(message = "User ID should be positive")
     private int id;
     @Email(message = "Email should be in right format")
     @NotBlank(message = "Email can't be blank")
@@ -25,4 +26,5 @@ public class User {
     private LocalDate birthday;
     private Set<Integer> friends = new HashSet<>();
     private Set<Integer> filmsLiked = new HashSet<>();
+    private Map<Integer, Boolean> friendshipStatus = new HashMap<>();
 }
