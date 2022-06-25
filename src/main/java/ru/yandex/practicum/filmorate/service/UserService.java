@@ -39,11 +39,7 @@ public class UserService {
      * @return List of Users with removed friendship.
      */
     public List<User> removeFriends(int firstUserId, int secondUserId) {
-        User first = getUserById(firstUserId);
-        User second = getUserById(secondUserId);
-        first.getFriends().remove(secondUserId);
-        second.getFriends().remove(firstUserId);
-        return List.of(first, second);
+        return storage.removeFriendship(firstUserId, secondUserId);
     }
 
     /**
@@ -53,14 +49,7 @@ public class UserService {
      * @return Set of common friends IDs.
      */
     public List<User> showCommonFriends(int firstUserId, int secondUserId) {
-        User first = getUserById(firstUserId);
-        User second = getUserById(secondUserId);
-        List<User> result = new ArrayList<>();
-        first.getFriends().stream()
-                .filter(second.getFriends()::contains)
-                .collect(Collectors.toSet())
-                .forEach(i -> result.add(getUserById(i)));
-        return result;
+        return storage.getCommonFriends(firstUserId, secondUserId);
     }
 
     public List<User> getAllUsers() { return storage.getAllUsers(); }

@@ -68,4 +68,20 @@ public interface UserStorage {
      * @return List of users if saving was successfull.
      */
     List<User> saveFriendship(int firstUserId, int secondUserId);
+
+    /**
+     * Remove friendship between two users.
+     * @param firstUserId First user int id.
+     * @param secondUserId Second user int id.
+     * @return List of users if removing was successfull.
+     */
+    List<User> removeFriendship(int firstUserId, int secondUserId);
+
+    /**
+     * Get list of common friends between two users.
+     * @param firstUserId First user int id.
+     * @param secondUserId Second user int id.
+     * @return List of common friends between two users.
+     */
+    List<User> getCommonFriends(int firstUserId, int secondUserId);
 }

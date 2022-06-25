@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.sql.Date;
@@ -13,9 +14,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Component
 @Qualifier("dbUserStorage")
@@ -111,7 +115,33 @@ public class DbUserStorage implements UserStorage {
 
     @Override
     public List<User> saveFriendship(int firstUserId, int secondUserId) {
-        return null;
+        User first = getUserById(firstUserId);
+        User second = getUserById(secondUserId);
+        String sqlQuery = "INSERT INTO friendships VALUES (?, ?, true)";
+        jdbcTemplate.update(sqlQuery, firstUserId, secondUserId);
+        return List.of(first, second);
+    }
+
+    @Override
+    public List<User> removeFriendship(int firstUserId, int secondUserId) {
+        User first = getUserById(firstUserId);
+        User second = getUserById(secondUserId);
+        String sqlQuery = "DELETE FROM frienships WHERE (from_id, to_id) IN ((?, ?)) AND is_approved = true";
+        jdbcTemplate.update(sqlQuery, firstUserId, secondUserId);
+        return List.of(first, second);
+    }
+
+    @Override
+    public List<User> getCommonFriends(int firstUserId, int secondUserId) {
+        User first = getUserById(firstUserId);
+        User second = getUserById(secondUserId);
+        List<User> result = new ArrayList<>();
+        try {
+            String sqlQuery = "SELECT DISTINCT from_id FROM friendships WHERE to_id = ? AND to_id = ?";
+            return jdbcTemplate.query(sqlQuery, this::mapRowToUser, firstUserId, secondUserId);
+        } catch (EmptyResultDataAccessException e) {
+            return result;
+        }
     }
 
     private User mapRowToUser(ResultSet resultSet, int rowNum) throws SQLException {
@@ -122,5 +152,9 @@ public class DbUserStorage implements UserStorage {
         result.setName(resultSet.getString("user_name"));
         result.setBirthday(resultSet.getDate("user_birthday").toLocalDate());
         return result;
+    }
+
+    private User getUserById(int id) {
+        return getUser(id).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Unable to find user"));
     }
 }

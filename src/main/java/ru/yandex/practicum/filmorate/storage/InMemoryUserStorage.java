@@ -87,6 +87,27 @@ public class InMemoryUserStorage implements UserStorage {
         return List.of(first, second);
     }
 
+    @Override
+    public List<User> removeFriendship(int firstUserId, int secondUserId) {
+        User first = getUserById(firstUserId);
+        User second = getUserById(secondUserId);
+        first.getFriends().remove(secondUserId);
+        second.getFriends().remove(firstUserId);
+        return List.of(first, second);
+    }
+
+    @Override
+    public List<User> getCommonFriends(int firstUserId, int secondUserId) {
+        User first = getUserById(firstUserId);
+        User second = getUserById(secondUserId);
+        List<User> result = new ArrayList<>();
+        first.getFriends().stream()
+                .filter(second.getFriends()::contains)
+                .collect(Collectors.toSet())
+                .forEach(i -> result.add(getUserById(i)));
+        return result;
+    }
+
     private int findUserIndexById(int id) {
         Optional<User> result = storage.stream().filter(i -> i.getId() == id).findAny();
         return result.isEmpty() ? -1 : storage.indexOf(result.get());
