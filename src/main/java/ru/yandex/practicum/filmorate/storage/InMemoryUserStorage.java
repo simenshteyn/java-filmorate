@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.storage;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.ArrayList;
@@ -9,6 +10,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Component
 @Qualifier("inMemoryUserStorage")
@@ -75,8 +78,21 @@ public class InMemoryUserStorage implements UserStorage {
         return storage;
     }
 
+    @Override
+    public List<User> saveFriendship(int firstUserId, int secondUserId) {
+        User first = getUserById(firstUserId);
+        User second = getUserById(secondUserId);
+        first.getFriends().add(secondUserId);
+        second.getFriends().add(firstUserId);
+        return List.of(first, second);
+    }
+
     private int findUserIndexById(int id) {
         Optional<User> result = storage.stream().filter(i -> i.getId() == id).findAny();
         return result.isEmpty() ? -1 : storage.indexOf(result.get());
+    }
+
+    private User getUserById(int id) {
+        return getUser(id).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Unable to find user"));
     }
 }

@@ -60,4 +60,12 @@ public interface UserStorage {
      * @return List of User objects.
      */
     List<User> getAllUsers();
+
+    /**
+     * Save friendship between two users.
+     * @param firstUserId Fist user int id.
+     * @param secondUserId Second user int id.
+     * @return List of users if saving was successfull.
+     */
+    List<User> saveFriendship(int firstUserId, int secondUserId);
 }

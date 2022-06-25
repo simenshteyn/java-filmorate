@@ -29,11 +29,7 @@ public class UserService {
      * @return List of Users if addition was successfull.
      */
     public List<User> makeFriends(int firstUserId, int secondUserId) {
-        User first = getUserById(firstUserId);
-        User second = getUserById(secondUserId);
-        first.getFriends().add(secondUserId);
-        second.getFriends().add(firstUserId);
-        return List.of(first, second);
+        return storage.saveFriendship(firstUserId, secondUserId);
     }
 
     /**

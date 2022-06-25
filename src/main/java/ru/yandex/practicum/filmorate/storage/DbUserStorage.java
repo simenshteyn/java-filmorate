@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -39,14 +40,14 @@ public class DbUserStorage implements UserStorage {
             stmt.setDate(4, Date.valueOf(user.getBirthday()));
             return stmt;
         }, keyHolder);
-        int userId = Objects.requireNonNull(keyHolder.getKey()).intValue();
-        String sqlQuerySearch = "SELECT user_email, user_login, user_name, user_birthday FROM users WHERE user_id = ?";
+        int userId = keyHolder.getKey().intValue();
+        String sqlQuerySearch = "SELECT user_id, user_email, user_login, user_name, user_birthday FROM users WHERE user_id = ?";
         return jdbcTemplate.queryForObject(sqlQuerySearch, this::mapRowToUser, userId);
     }
 
     @Override
     public User removeUser(int userId) {
-        String sqlQuerySearch = "SELECT user_email, user_login, user_name, user_birthday FROM users WHERE user_id = ?";
+        String sqlQuerySearch = "SELECT user_id, user_email, user_login, user_name, user_birthday FROM users WHERE user_id = ?";
         Optional<User> result = Optional.ofNullable(jdbcTemplate.queryForObject(sqlQuerySearch, this::mapRowToUser, userId));
         if (result.isEmpty()) return null;
         String sqlQuery = "DELETE FROM users where user_id = ?";
@@ -62,27 +63,38 @@ public class DbUserStorage implements UserStorage {
 
     @Override
     public Optional<User> updateUser(int userId, User user) {
-        String sqlQuerySearch = "SELECT user_email, user_login, user_name, user_birthday FROM users WHERE user_id = ?";
-        Optional<User> result = Optional.ofNullable(jdbcTemplate.queryForObject(sqlQuerySearch, this::mapRowToUser, userId));
-        if (result.isEmpty()) return Optional.empty();
+        try {
+            String sqlQuerySearch = "SELECT user_id, user_email, user_login, user_name, user_birthday FROM users WHERE user_id = ?";
+            User result = jdbcTemplate.queryForObject(sqlQuerySearch, this::mapRowToUser, userId);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
         String sqlQuery = "UPDATE users SET user_email = ?, user_login = ?, user_name = ?, user_birthday = ? WHERE user_id = ?";
-        jdbcTemplate.update(sqlQuery, user.getEmail(), user.getLogin(), user.getName(), user.getBirthday());
-        String sqlQuerySecondSearch = "SELECT user_email, user_login, user_name, user_birthday FROM users WHERE user_id = ?";
+        jdbcTemplate.update(sqlQuery, user.getEmail(), user.getLogin(), user.getName(), user.getBirthday(), userId);
+        String sqlQuerySecondSearch = "SELECT user_id, user_email, user_login, user_name, user_birthday FROM users WHERE user_id = ?";
         return Optional.ofNullable(jdbcTemplate.queryForObject(sqlQuerySecondSearch, this::mapRowToUser, userId));
     }
 
     @Override
     public Optional<User> getUser(int userId) {
-        String sqlQuery = "SELECT user_email, user_login, user_name, user_birthday FROM users WHERE user_id = ?";
-        return Optional.ofNullable(jdbcTemplate.queryForObject(sqlQuery, this::mapRowToUser, userId));
+        try {
+            String sqlQuery = "SELECT user_id, user_email, user_login, user_name, user_birthday FROM users WHERE user_id = ?";
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sqlQuery, this::mapRowToUser, userId));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
     public Optional<List<User>> getUserFriends(int userId) {
-        String sqlQuery = "SELECT user_id, user_email, user_login, user_name, user_birthday FROM users WHERE user_id IN" +
+        try {
+            String sqlQuery = "SELECT user_id, user_email, user_login, user_name, user_birthday FROM users WHERE user_id IN" +
                 "(SELECT to_id FROM friendships WHERE from_id = ? AND is_approved = true UNION " +
                 "SELECT from_id FROM friendships WHERE to_id = ? AND is_approved = true)";
-        return Optional.of(jdbcTemplate.query(sqlQuery, this::mapRowToUser, userId));
+            return Optional.of(jdbcTemplate.query(sqlQuery, this::mapRowToUser, userId, userId));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -95,6 +107,11 @@ public class DbUserStorage implements UserStorage {
     public List<User> getAllUsers() {
         String sqlQuery = "SELECT user_id, user_email, user_login, user_name, user_birthday FROM users";
         return jdbcTemplate.query(sqlQuery, this::mapRowToUser);
+    }
+
+    @Override
+    public List<User> saveFriendship(int firstUserId, int secondUserId) {
+        return null;
     }
 
     private User mapRowToUser(ResultSet resultSet, int rowNum) throws SQLException {
