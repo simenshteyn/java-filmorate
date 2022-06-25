@@ -21,7 +21,7 @@ public class FilmService {
     private final UserStorage userStorage;
 
     @Autowired
-    public FilmService(@Qualifier("inMemoryFilmStorage") FilmStorage filmStorage,
+    public FilmService(@Qualifier("dbFilmStorage") FilmStorage filmStorage,
                        @Qualifier("dbUserStorage") UserStorage userStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
@@ -36,8 +36,7 @@ public class FilmService {
     public Film addLike(int userId, int filmId) {
         User user = userStorage.getUser(userId).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Unable to find user"));
         Film film = getFilmById(filmId);
-        film.getUsersLikedIds().add(userId);
-        user.getFilmsLiked().add(filmId);
+        filmStorage.saveFilmLike(user, film);
         return film;
     }
 
@@ -50,8 +49,7 @@ public class FilmService {
     public Film removeLike(int userId, int filmId) {
         User user = userStorage.getUser(userId).orElseThrow(()-> new ResponseStatusException(NOT_FOUND, "Unable to find user"));
         Film film = getFilmById(filmId);
-        film.getUsersLikedIds().remove(userId);
-        user.getFilmsLiked().remove(filmId);
+        filmStorage.removeFilmLike(user, film);
         return film;
     }
 

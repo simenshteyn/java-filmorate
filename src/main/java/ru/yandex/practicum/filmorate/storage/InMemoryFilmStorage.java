@@ -2,12 +2,16 @@ package ru.yandex.practicum.filmorate.storage;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Component
 @Qualifier("inMemoryFilmStorage")
@@ -59,6 +63,20 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public List<Film> getAllFilms() {
         return storage;
+    }
+
+    @Override
+    public Film saveFilmLike(User user, Film film) {
+        film.getUsersLikedIds().add(user.getId());
+        user.getFilmsLiked().add(film.getId());
+        return film;
+    }
+
+    @Override
+    public Film removeFilmLike(User user, Film film) {
+        film.getUsersLikedIds().remove(user.getId());
+        user.getFilmsLiked().remove(film.getId());
+        return film;
     }
 
     private int findFilmIndexById(int id) {
