@@ -119,6 +119,7 @@ public class DbUserStorage implements UserStorage {
         User second = getUserById(secondUserId);
         String sqlQuery = "INSERT INTO friendships VALUES (?, ?, true)";
         jdbcTemplate.update(sqlQuery, firstUserId, secondUserId);
+        jdbcTemplate.update(sqlQuery, secondUserId, firstUserId);
         return List.of(first, second);
     }
 
@@ -126,8 +127,9 @@ public class DbUserStorage implements UserStorage {
     public List<User> removeFriendship(int firstUserId, int secondUserId) {
         User first = getUserById(firstUserId);
         User second = getUserById(secondUserId);
-        String sqlQuery = "DELETE FROM frienships WHERE (from_id, to_id) IN ((?, ?)) AND is_approved = true";
+        String sqlQuery = "DELETE FROM friendships WHERE (from_id, to_id) IN ((?, ?)) AND is_approved = true";
         jdbcTemplate.update(sqlQuery, firstUserId, secondUserId);
+        jdbcTemplate.update(sqlQuery, secondUserId, firstUserId);
         return List.of(first, second);
     }
 
@@ -137,7 +139,9 @@ public class DbUserStorage implements UserStorage {
         User second = getUserById(secondUserId);
         List<User> result = new ArrayList<>();
         try {
-            String sqlQuery = "SELECT DISTINCT from_id FROM friendships WHERE to_id = ? AND to_id = ?";
+            String sqlQuery = "SELECT user_id, user_email, user_login, user_name, user_birthday " +
+                    "FROM users WHERE user_id IN (SELECT DISTINCT from_id FROM friendships WHERE to_id = ? AND is_approved = true " +
+                    "INTERSECT SELECT DISTINCT from_id FROM friendships WHERE to_id = ? AND is_approved = true)";
             return jdbcTemplate.query(sqlQuery, this::mapRowToUser, firstUserId, secondUserId);
         } catch (EmptyResultDataAccessException e) {
             return result;
