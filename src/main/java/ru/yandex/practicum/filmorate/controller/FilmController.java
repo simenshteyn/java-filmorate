@@ -7,6 +7,8 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Rating;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.validator.FilmorateValidationErrorBuilder;
 
@@ -81,4 +83,26 @@ public class FilmController {
         }
         return ResponseEntity.ok(filmService.updateFilm(id, film));
     }
+
+    @GetMapping("/genres")
+    public List<Genre> getAllGenres() {
+        return filmService.getAllGenres();
+    }
+
+    @GetMapping("/genres/{id}")
+    public ResponseEntity<?> getGenreById(@PathVariable int id) {
+        return ResponseEntity.ok(filmService.getGenreById(id));
+    }
+
+    @GetMapping("/mpa")
+    public List<Rating> getAllRatings() {
+        return filmService.getAllRatings();
+    }
+
+    @GetMapping("/mpa/{id}")
+    public ResponseEntity<?> getRatingById(@PathVariable int id) {
+        return ResponseEntity.ok(filmService.getRatingById(id));
+    }
+
+
 }

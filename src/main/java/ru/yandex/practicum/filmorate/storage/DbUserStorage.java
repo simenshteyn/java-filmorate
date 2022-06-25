@@ -92,10 +92,12 @@ public class DbUserStorage implements UserStorage {
     @Override
     public Optional<List<User>> getUserFriends(int userId) {
         try {
-            String sqlQuery = "SELECT user_id, user_email, user_login, user_name, user_birthday FROM users WHERE user_id IN" +
-                "(SELECT to_id FROM friendships WHERE from_id = ? AND is_approved = true UNION " +
-                "SELECT from_id FROM friendships WHERE to_id = ? AND is_approved = true)";
-            return Optional.of(jdbcTemplate.query(sqlQuery, this::mapRowToUser, userId, userId));
+//            String sqlQuery = "SELECT user_id, user_email, user_login, user_name, user_birthday FROM users WHERE user_id IN" +
+//                "(SELECT to_id FROM friendships WHERE from_id = ? AND is_approved = true UNION " +
+//                "SELECT from_id FROM friendships WHERE to_id = ? AND is_approved = true)";
+            String sqlQuery = "SELECT user_id, user_email, user_login, user_name, user_birthday FROM users WHERE user_id IN " +
+                    "(SELECT to_id FROM friendships WHERE from_id = ? AND is_approved = true)";
+            return Optional.of(jdbcTemplate.query(sqlQuery, this::mapRowToUser, userId));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -119,7 +121,7 @@ public class DbUserStorage implements UserStorage {
         User second = getUserById(secondUserId);
         String sqlQuery = "INSERT INTO friendships VALUES (?, ?, true)";
         jdbcTemplate.update(sqlQuery, firstUserId, secondUserId);
-        jdbcTemplate.update(sqlQuery, secondUserId, firstUserId);
+//        jdbcTemplate.update(sqlQuery, secondUserId, firstUserId);
         return List.of(first, second);
     }
 
@@ -129,7 +131,7 @@ public class DbUserStorage implements UserStorage {
         User second = getUserById(secondUserId);
         String sqlQuery = "DELETE FROM friendships WHERE (from_id, to_id) IN ((?, ?)) AND is_approved = true";
         jdbcTemplate.update(sqlQuery, firstUserId, secondUserId);
-        jdbcTemplate.update(sqlQuery, secondUserId, firstUserId);
+//        jdbcTemplate.update(sqlQuery, secondUserId, firstUserId);
         return List.of(first, second);
     }
 
@@ -140,8 +142,8 @@ public class DbUserStorage implements UserStorage {
         List<User> result = new ArrayList<>();
         try {
             String sqlQuery = "SELECT user_id, user_email, user_login, user_name, user_birthday " +
-                    "FROM users WHERE user_id IN (SELECT DISTINCT from_id FROM friendships WHERE to_id = ? AND is_approved = true " +
-                    "INTERSECT SELECT DISTINCT from_id FROM friendships WHERE to_id = ? AND is_approved = true)";
+                    "FROM users WHERE user_id IN (SELECT to_id FROM friendships WHERE from_id = ? AND is_approved = true " +
+                    "INTERSECT SELECT to_id FROM friendships WHERE from_id = ? AND is_approved = true)";
             return jdbcTemplate.query(sqlQuery, this::mapRowToUser, firstUserId, secondUserId);
         } catch (EmptyResultDataAccessException e) {
             return result;

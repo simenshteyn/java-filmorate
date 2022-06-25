@@ -1,10 +1,10 @@
 INSERT INTO genres (genre_name)
-       VALUES ('comedy'),
-              ('drama'),
-              ('cartoon'),
-              ('thriller'),
-              ('documentary'),
-              ('action');
+       VALUES ('Комедия'),
+              ('Драма'),
+              ('Мультфильм'),
+              ('Триллер'),
+              ('Документальный'),
+              ('Боевик');
 
 INSERT INTO ratings (rating_name)
        VALUES ('G'),
