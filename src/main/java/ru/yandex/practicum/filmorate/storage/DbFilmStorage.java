@@ -65,26 +65,30 @@ public class DbFilmStorage implements FilmStorage {
 
     @Override
     public Optional<Film> updateFilm(int filmId, Film film) {
-        Film result;
         try {
             String sqlQuerySearch = "SELECT film_id, film_name, film_description, film_release_date, film_duration, film_rating_id FROM films WHERE film_id = ?";
-            result = jdbcTemplate.queryForObject(sqlQuerySearch, this::mapRowToFilm, filmId);
-
+            jdbcTemplate.queryForObject(sqlQuerySearch, this::mapRowToFilm, filmId);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+
         String sqlQuery = "UPDATE films SET film_name = ?, film_description = ?, film_release_date = ?, film_duration = ?, film_rating_id = ? WHERE film_id = ?";
         jdbcTemplate.update(sqlQuery, film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(), film.getMpa().getId(), film.getId());
-        if (result != null) {
 
-            String sqlQueryGenres = "SELECT g.genre_id, g.genre_name FROM film_genres AS fg JOIN genres AS g ON g.genre_id = fg.genre_id WHERE fg.film_id = ?";
-            List<Genre> genres = jdbcTemplate.query(sqlQueryGenres, this::mapRowToGenre, filmId);
-            if (genres.size() > 0) {
-                film.setGenres(new HashSet<>());
-                genres.forEach(g -> film.getGenres().add(g));
-            }
+        if (film.getGenres() != null) {
+            if (film.getGenres().isEmpty()) System.out.println("SET IS EMPTY!");
+            String sqlQueryGenresRemove = "DELETE FROM film_genres WHERE film_id = ?";
+            jdbcTemplate.update(sqlQueryGenresRemove, filmId);
+            SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate).withTableName("film_genres")
+                    .usingColumns("film_id", "genre_id");
+            film.getGenres().forEach(g -> simpleJdbcInsert.execute(Map.of("film_id", filmId, "genre_id", g.getId())));
         }
-        return getFilm(filmId);
+
+        Optional<Film> result = getFilm(filmId);
+        if (film.getGenres() != null) {
+            if (film.getGenres().isEmpty()) result.get().setGenres(new HashSet<>());
+        }
+        return result;
     }
 
     @Override
@@ -102,6 +106,10 @@ public class DbFilmStorage implements FilmStorage {
                     film.setGenres(new HashSet<>());
                     genres.forEach(g -> film.getGenres().add(g));
                 }
+
+                String sqlQueryRating = "SELECT rating_id, rating_name FROM ratings WHERE rating_id = ?";
+                Optional<Rating> rating = Optional.ofNullable(jdbcTemplate.queryForObject(sqlQueryRating, this::mapRowToRating, film.getMpa().getId()));
+                rating.ifPresent(film::setMpa);
                 return Optional.of(film);
             }
             return result;
