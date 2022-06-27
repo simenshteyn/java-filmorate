@@ -4,8 +4,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -13,8 +11,6 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Rating;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.sql.Date;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashSet;
@@ -22,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Component
@@ -43,15 +38,19 @@ public class DbFilmStorage implements FilmStorage {
         if (film.getGenres() != null) {
             SimpleJdbcInsert secondSimpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate).withTableName("film_genres")
                     .usingColumns("film_id", "genre_id");
-            film.getGenres().forEach(g -> secondSimpleJdbcInsert.execute(Map.of("film_id", filmId, "genre_id", g.getId())));
+            film.getGenres().forEach(g -> secondSimpleJdbcInsert.execute(Map.of("film_id", filmId,
+                    "genre_id", g.getId())));
         }
         return getFilmById(filmId);
     }
 
     @Override
     public Optional<Film> removeFilm(int filmId) {
-        String sqlQuerySearch = "SELECT film_id, film_name, film_description, film_release_date, film_duration FROM films WHERE film_id = ?";
-        Optional<Film> result = Optional.ofNullable(jdbcTemplate.queryForObject(sqlQuerySearch, this::mapRowToFilm, filmId));
+        String sqlQuerySearch = "SELECT film_id, film_name, film_description, film_release_date, film_duration " +
+                "FROM films WHERE film_id = ?";
+        Optional<Film> result = Optional.ofNullable(
+                jdbcTemplate.queryForObject(sqlQuerySearch, this::mapRowToFilm, filmId)
+        );
         String sqlQuery = "DELETE FROM films WHERE film_id = ?";
         jdbcTemplate.update(sqlQuery, filmId);
         return result;
@@ -66,7 +65,8 @@ public class DbFilmStorage implements FilmStorage {
     @Override
     public Optional<Film> updateFilm(int filmId, Film film) {
         try {
-            String sqlQuerySearch = "SELECT film_id, film_name, film_description, film_release_date, film_duration, film_rating_id FROM films WHERE film_id = ?";
+            String sqlQuerySearch = "SELECT film_id, film_name, film_description, film_release_date, film_duration, film_rating_id " +
+                    "FROM films WHERE film_id = ?";
             jdbcTemplate.queryForObject(sqlQuerySearch, this::mapRowToFilm, filmId);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -76,7 +76,6 @@ public class DbFilmStorage implements FilmStorage {
         jdbcTemplate.update(sqlQuery, film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(), film.getMpa().getId(), film.getId());
 
         if (film.getGenres() != null) {
-            if (film.getGenres().isEmpty()) System.out.println("SET IS EMPTY!");
             String sqlQueryGenresRemove = "DELETE FROM film_genres WHERE film_id = ?";
             jdbcTemplate.update(sqlQueryGenresRemove, filmId);
             SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate).withTableName("film_genres")
@@ -94,13 +93,15 @@ public class DbFilmStorage implements FilmStorage {
     @Override
     public Optional<Film> getFilm(int filmId) {
         try {
-            String sqlQuery = "SELECT film_id, film_name, film_description, film_release_date, film_duration, film_rating_id FROM films WHERE film_id = ?";
+            String sqlQuery = "SELECT film_id, film_name, film_description, film_release_date, film_duration, film_rating_id " +
+                    "FROM films WHERE film_id = ?";
             Optional<Film> result = Optional.ofNullable(jdbcTemplate.queryForObject(sqlQuery, this::mapRowToFilm, filmId));
 
             if (result.isPresent()) {
                 Film film = result.get();
 
-                String sqlQueryGenres = "SELECT g.genre_id, g.genre_name FROM film_genres AS fg JOIN genres AS g ON g.genre_id = fg.genre_id WHERE fg.film_id = ?";
+                String sqlQueryGenres = "SELECT g.genre_id, g.genre_name FROM film_genres AS fg " +
+                        "JOIN genres AS g ON g.genre_id = fg.genre_id WHERE fg.film_id = ?";
                 List<Genre> genres = jdbcTemplate.query(sqlQueryGenres, this::mapRowToGenre, filmId);
                 if (genres.size() > 0) {
                     film.setGenres(new HashSet<>());
@@ -108,7 +109,9 @@ public class DbFilmStorage implements FilmStorage {
                 }
 
                 String sqlQueryRating = "SELECT rating_id, rating_name FROM ratings WHERE rating_id = ?";
-                Optional<Rating> rating = Optional.ofNullable(jdbcTemplate.queryForObject(sqlQueryRating, this::mapRowToRating, film.getMpa().getId()));
+                Optional<Rating> rating = Optional.ofNullable(
+                        jdbcTemplate.queryForObject(sqlQueryRating, this::mapRowToRating, film.getMpa().getId())
+                );
                 rating.ifPresent(film::setMpa);
                 return Optional.of(film);
             }
@@ -116,7 +119,6 @@ public class DbFilmStorage implements FilmStorage {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
-
     }
 
     @Override

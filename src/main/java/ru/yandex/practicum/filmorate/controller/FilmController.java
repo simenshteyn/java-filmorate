@@ -103,6 +103,4 @@ public class FilmController {
     public ResponseEntity<?> getRatingById(@PathVariable int id) {
         return ResponseEntity.ok(filmService.getRatingById(id));
     }
-
-
 }

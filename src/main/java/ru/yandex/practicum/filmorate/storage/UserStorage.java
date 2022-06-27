@@ -16,7 +16,7 @@ public interface UserStorage {
     /**
      * Remove User object from storage by ID.
      * @param userId ID of User to remove.
-     * @return Added User object or null if has no success.
+     * @return Added User object or null, if it has no success.
      */
     User removeUser(int userId);
 

@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.model;
 import java.time.LocalDate;
 import java.util.*;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import ru.yandex.practicum.filmorate.validator.ReleaseDate;
 

@@ -13,10 +13,8 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -92,9 +90,6 @@ public class DbUserStorage implements UserStorage {
     @Override
     public Optional<List<User>> getUserFriends(int userId) {
         try {
-//            String sqlQuery = "SELECT user_id, user_email, user_login, user_name, user_birthday FROM users WHERE user_id IN" +
-//                "(SELECT to_id FROM friendships WHERE from_id = ? AND is_approved = true UNION " +
-//                "SELECT from_id FROM friendships WHERE to_id = ? AND is_approved = true)";
             String sqlQuery = "SELECT user_id, user_email, user_login, user_name, user_birthday FROM users WHERE user_id IN " +
                     "(SELECT to_id FROM friendships WHERE from_id = ? AND is_approved = true)";
             return Optional.of(jdbcTemplate.query(sqlQuery, this::mapRowToUser, userId));
@@ -121,7 +116,6 @@ public class DbUserStorage implements UserStorage {
         User second = getUserById(secondUserId);
         String sqlQuery = "INSERT INTO friendships VALUES (?, ?, true)";
         jdbcTemplate.update(sqlQuery, firstUserId, secondUserId);
-//        jdbcTemplate.update(sqlQuery, secondUserId, firstUserId);
         return List.of(first, second);
     }
 
@@ -131,7 +125,6 @@ public class DbUserStorage implements UserStorage {
         User second = getUserById(secondUserId);
         String sqlQuery = "DELETE FROM friendships WHERE (from_id, to_id) IN ((?, ?)) AND is_approved = true";
         jdbcTemplate.update(sqlQuery, firstUserId, secondUserId);
-//        jdbcTemplate.update(sqlQuery, secondUserId, firstUserId);
         return List.of(first, second);
     }
 
