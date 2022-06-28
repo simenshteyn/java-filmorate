@@ -18,6 +18,7 @@ import java.util.*;
 public class UserController {
     private final UserService userService;
 
+
     @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
@@ -82,4 +83,6 @@ public class UserController {
         }
         return ResponseEntity.ok(userService.updateUser(id, user));
     }
+
+
 }
