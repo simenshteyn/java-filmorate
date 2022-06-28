@@ -139,3 +139,17 @@ CREATE TABLE IF NOT EXISTS events (
             ON DELETE CASCADE
             ON UPDATE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS film_directors (
+    film_id             integer         NOT NULL,
+    director_id         integer         NOT NULL,
+    FOREIGN KEY (film_id)
+            REFERENCES films (film_id)
+            ON DELETE CASCADE
+            ON UPDATE CASCADE,
+    FOREIGN KEY (director_id)
+            REFERENCES directors (director_id)
+            ON DELETE CASCADE
+            ON UPDATE CASCADE,
+    PRIMARY KEY (film_id, director_id)
+);
