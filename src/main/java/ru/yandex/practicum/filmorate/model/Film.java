@@ -25,6 +25,7 @@ public class Film {
     private Set<Genre> genres;
     @NotNull(message = "MPA can't be null")
     private Rating mpa;
+    private Set<Director> director;
 
     public Map<String, Object> toMap() {
         Map<String, Object> values = new HashMap<>();
