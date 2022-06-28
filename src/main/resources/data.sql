@@ -13,3 +13,13 @@ INSERT INTO ratings (rating_name)
               ('R'),
               ('NC-17');
 
+INSERT INTO event_types (event_type_name)
+       VALUES ('LIKE'),
+              ('REVIEW'),
+              ('FRIEND');
+
+INSERT INTO event_operations (event_operation_name)
+       VALUES ('REMOVE'),
+              ('ADD'),
+              ('UPDATE');
+
