@@ -19,5 +19,5 @@ public interface EventStorage {
 
     void updateReview(int filmId, int userId);
 
-    List<Event> getFeed();
+    List<Event> getFeed(int id);
 }

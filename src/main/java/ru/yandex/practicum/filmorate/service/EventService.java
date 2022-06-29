@@ -44,7 +44,7 @@ public class EventService {
         dbEventStorage.updateReview(filmId, userId);
     }
 
-    public List<Event> getFeed() {
-        return dbEventStorage.getFeed();
+    public List<Event> getFeed(int id) {
+        return dbEventStorage.getFeed(id);
     }
 }

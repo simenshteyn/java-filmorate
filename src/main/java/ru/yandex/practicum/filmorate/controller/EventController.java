@@ -19,7 +19,7 @@ EventService eventService;
     }
 
     @GetMapping ("/users/{id}/feed")
-    List<Event> getFeed(@PathVariable final String id){
-        return eventService.getFeed();
+    List<Event> getFeed(@PathVariable final int id){
+        return eventService.getFeed(id);
     }
 }
