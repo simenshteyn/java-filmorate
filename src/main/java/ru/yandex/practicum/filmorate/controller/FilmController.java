@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Rating;
+import ru.yandex.practicum.filmorate.service.EventService;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.validator.FilmorateValidationErrorBuilder;
 
@@ -22,10 +23,12 @@ import java.util.*;
 @Validated
 public class FilmController {
     private final FilmService filmService;
+    private final EventService eventService;
 
     @Autowired
-    public FilmController(FilmService filmService) {
+    public FilmController(FilmService filmService, EventService eventService) {
         this.filmService = filmService;
+        this.eventService = eventService;
     }
 
     @GetMapping("/films")
@@ -51,11 +54,13 @@ public class FilmController {
 
     @PutMapping("/films/{id}/like/{userId}")
     public ResponseEntity<?> addLike(@PathVariable int id, @PathVariable int userId) {
+        eventService.addLike(id, userId);
         return ResponseEntity.ok(filmService.addLike(userId, id));
     }
 
     @DeleteMapping("/films/{id}/like/{userId}")
     public ResponseEntity<?> removeLike(@PathVariable int id, @PathVariable int userId) {
+        eventService.removeLike(id, userId);
         return ResponseEntity.ok(filmService.removeLike(userId, id));
     }
 

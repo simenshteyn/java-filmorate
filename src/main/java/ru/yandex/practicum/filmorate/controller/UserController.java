@@ -6,22 +6,24 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.EventService;
 import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.validator.FilmorateValidationErrorBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.*;
+import java.util.List;
 
 @RestController
 @Slf4j
 public class UserController {
     private final UserService userService;
-
+    private final EventService eventService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, EventService eventService) {
         this.userService = userService;
+        this.eventService = eventService;
     }
 
     @GetMapping("/users")
@@ -36,11 +38,13 @@ public class UserController {
 
     @PutMapping("/users/{id}/friends/{friendId}")
     public ResponseEntity<?> makeFriends(@PathVariable int id, @PathVariable int friendId) {
+        eventService.addFriend(id, friendId);
         return ResponseEntity.ok(userService.makeFriends(id, friendId));
     }
 
     @DeleteMapping("/users/{id}/friends/{friendId}")
     public ResponseEntity<?> removeFriends(@PathVariable int id, @PathVariable int friendId) {
+        eventService.removeFriend(id, friendId);
         return ResponseEntity.ok(userService.removeFriends(id, friendId));
     }
 
