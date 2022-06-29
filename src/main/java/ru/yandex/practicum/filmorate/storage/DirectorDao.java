@@ -6,10 +6,13 @@ import org.springframework.stereotype.Repository;
 import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.mapper.MapRowToDirector;
 import ru.yandex.practicum.filmorate.storage.mapper.MapRowToFilm;
+import ru.yandex.practicum.filmorate.storage.mapper.MapRowToGenre;
 
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,10 +29,28 @@ public class DirectorDao {
     }
 
     public List<Film> getSortedFilmsByDirectors(int directorId, String sortBy) {
-        String sql = "SELECT * FROM films AS f JOIN film_directors AS fd ON f.film_id = fd.film_id " +
-                "JOIN directors AS d ON fd.director_id = d.director_id WHERE director_id = ?";
+
+        String sqlCheck = "SELECT director_id FROM film_directors WHERE director_id = ?";
+        List<Integer> listFind = jdbcTemplate.query(sqlCheck, (rs, rowNum) -> rs.getInt(1), directorId);
+        if (listFind.size() == 0) {
+            throw new ResponseStatusException(NOT_FOUND, "Unable to find director's id");
+        }
+
+        String sql = "SELECT * FROM films AS f " +
+                "LEFT JOIN film_directors AS fd ON fd.film_id = f.film_id " +
+                "LEFT JOIN directors AS d ON fd.director_id = d.director_id " +
+                "WHERE fd.director_id = ?";
 
         List<Film> film = jdbcTemplate.query(sql, new MapRowToFilm(), directorId);
+
+        for (Film x : film) {
+            String sqlQueryGenres = "SELECT g.genre_id, g.genre_name FROM film_genres AS fg " +
+                    "JOIN genres AS g ON g.genre_id = fg.genre_id WHERE film_id = ?";
+            List<Genre> genres = jdbcTemplate.query(sqlQueryGenres, new MapRowToGenre(), x.getId());
+            if (genres.size() > 0) {
+                x.setGenres(new HashSet<>(genres));
+            }
+        }
 
         if(sortBy.equals("year")) {
            return film.stream().sorted(Comparator.comparing(Film::getReleaseDate)).collect(Collectors.toList());
@@ -47,20 +68,23 @@ public class DirectorDao {
     }
 
     public Director getDirectorById(int id) {
+        String sqlCheck = "SELECT director_id FROM directors WHERE director_id = ?";
+        List<Integer> listFind = jdbcTemplate.query(sqlCheck, (rs, rowNum) -> rs.getInt(1), id);
+        if (listFind.size() == 0) {
+            throw new ResponseStatusException(NOT_FOUND, "Unable to find director's id");
+        }
+
         String sql = "SELECT * FROM directors WHERE director_id = ?";
 
         return jdbcTemplate.queryForObject(sql, new MapRowToDirector(), id);
     }
 
     public Director addDirector(Director director) {
-        String sql = "INSERT INTO directors (director_id, director_name) " +
-                "VALUES (?, ?)";
+        String sql = "INSERT INTO directors (director_name) " +
+                "VALUES (?)";
 
-        jdbcTemplate.update(sql,
-                director.getId(),
-                director.getName());
-
-        return getDirectorById(director.getId());
+        jdbcTemplate.update(sql, director.getName());
+        return jdbcTemplate.queryForObject("SELECT * FROM directors WHERE director_name = ?", new MapRowToDirector(), director.getName());
     }
 
     public Director updateDirector(Director director) {
@@ -80,7 +104,10 @@ public class DirectorDao {
     }
 
     public void deleteDirectorById(int id) {
-        String sql = "DELETE FROM directors WHERE director_id = ?";
-        jdbcTemplate.update(sql, id);
+        String sqlDeleteDirector = "DELETE FROM directors WHERE director_id = ?";
+        jdbcTemplate.update(sqlDeleteDirector, id);
+
+        String sqlDeleteFilmDirector = "DELETE FROM film_directors WHERE director_id = ?";
+        jdbcTemplate.update(sqlDeleteFilmDirector, id);
     }
 }

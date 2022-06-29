@@ -13,7 +13,7 @@ import java.util.List;
 @Slf4j
 public class DirectorController {
 
-    private DirectorService directorService;
+    private final DirectorService directorService;
 
     @Autowired
     public DirectorController(DirectorService directorService) {
@@ -55,6 +55,6 @@ public class DirectorController {
     // Удаление режиссёра
     @DeleteMapping("/directors/{id}")
     public void deleteDirectorById(@PathVariable int id) {
-        return directorService.deleteDirectorById(id);
+        directorService.deleteDirectorById(id);
     }
 }

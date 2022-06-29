@@ -1,12 +1,17 @@
 package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.DirectorDao;
 
 import java.util.List;
+
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Service
 public class DirectorService {
@@ -30,6 +35,9 @@ public class DirectorService {
     }
 
     public Director addDirector(Director director) {
+        if(director.getName().isBlank())  {
+            throw new ResponseStatusException(INTERNAL_SERVER_ERROR, "Incorrect director's name");
+        }
         return directorDao.addDirector(director);
     }
 

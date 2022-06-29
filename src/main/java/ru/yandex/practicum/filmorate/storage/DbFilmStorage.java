@@ -6,17 +6,15 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.Rating;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.*;
+import ru.yandex.practicum.filmorate.storage.mapper.MapRowToDirector;
+import ru.yandex.practicum.filmorate.storage.mapper.MapRowToFilm;
+import ru.yandex.practicum.filmorate.storage.mapper.MapRowToFilmDirector;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
@@ -42,6 +40,15 @@ public class DbFilmStorage implements FilmStorage {
             film.getGenres().forEach(g -> secondSimpleJdbcInsert.execute(Map.of("film_id", filmId,
                     "genre_id", g.getId())));
         }
+
+        if (film.getDirectors().size() != 0) {
+            String sqlFilm = "INSERT INTO film_directors (film_id, director_id) " +
+                    "VALUES (?, ?)";
+            jdbcTemplate.update(sqlFilm,
+                    filmId,
+                    film.getDirectors().get(0).getId());
+        }
+
         return getFilmById(filmId);
     }
 
@@ -76,6 +83,21 @@ public class DbFilmStorage implements FilmStorage {
         String sqlQuery = "UPDATE films SET film_name = ?, film_description = ?, film_release_date = ?, film_duration = ?, film_rating_id = ? WHERE film_id = ?";
         jdbcTemplate.update(sqlQuery, film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(), film.getMpa().getId(), film.getId());
 
+        if (film.getDirectors().size() != 0) {
+            String sqlCheck = "SELECT film_id FROM film_directors WHERE film_id = ?";
+            List<Integer> listFind = jdbcTemplate.query(sqlCheck, (rs, rowNum) -> rs.getInt(1), filmId);
+            if (listFind.size() == 0) {
+                String sqlDir = "INSERT INTO film_directors (film_id, director_id) " +
+                        "VALUES (?, ?)";
+                jdbcTemplate.update(sqlDir,
+                        filmId,
+                        film.getDirectors().get(0).getId());
+            } else {
+                String sqlDirector = "UPDATE film_directors SET film_id = ?, director_id = ? WHERE film_id = ?";
+                jdbcTemplate.update(sqlDirector, filmId, film.getDirectors().get(0), filmId);
+            }
+        }
+
         if (film.getGenres() != null) {
             String sqlQueryGenresRemove = "DELETE FROM film_genres WHERE film_id = ?";
             jdbcTemplate.update(sqlQueryGenresRemove, filmId);
@@ -87,6 +109,14 @@ public class DbFilmStorage implements FilmStorage {
         Optional<Film> result = getFilm(filmId);
         if (film.getGenres() != null) {
             if (film.getGenres().isEmpty()) result.get().setGenres(new HashSet<>());
+        }
+
+        if (film.getDirectors() != null) {
+            if (film.getDirectors().isEmpty()) {
+                String sqlDeleteDirector = "DELETE FROM film_directors WHERE film_id = ?";
+                jdbcTemplate.update(sqlDeleteDirector, film.getId());
+                result.get().setDirectors(null);
+            }
         }
         return result;
     }
@@ -114,6 +144,13 @@ public class DbFilmStorage implements FilmStorage {
                         jdbcTemplate.queryForObject(sqlQueryRating, this::mapRowToRating, film.getMpa().getId())
                 );
                 rating.ifPresent(film::setMpa);
+
+                String sqlQueryDirectors = "SELECT d.director_id, d.director_name FROM film_directors AS fd JOIN directors AS d ON fd.director_id = d.director_id WHERE film_id = ?";
+                List<Director> directors = jdbcTemplate.query(sqlQueryDirectors, new MapRowToDirector(), filmId);
+                if (directors.size() > 0) {
+                    film.setDirectors(new ArrayList<>());
+                    directors.forEach(g -> film.getDirectors().add(g));
+                }
                 return Optional.of(film);
             }
             return result;
@@ -124,14 +161,14 @@ public class DbFilmStorage implements FilmStorage {
 
     @Override
     public List<Film> getFilms(int limit, int offset) {
-        String sqlQuery = "SELECT film_id, film_name, film_description, film_release_date, film_duration FROM films LIMIT ? OFFSET ?";
+        String sqlQuery = "SELECT film_id, film_name, film_description, film_release_date, film_duration, film_rating_id FROM films LIMIT ? OFFSET ?";
         return jdbcTemplate.query(sqlQuery, this::mapRowToFilm, limit, offset);
     }
 
     @Override
     public List<Film> getAllFilms() {
-        String sqlQuery = "SELECT film_id, film_name, film_description, film_release_date, film_duration FROM films";
-        return jdbcTemplate.query(sqlQuery, this::mapRowToFilm);
+        String sqlQuery = "SELECT * FROM films AS f LEFT JOIN film_directors AS fd ON fd.film_id = f.film_id LEFT JOIN directors AS d ON fd.director_id = d.director_id";
+        return jdbcTemplate.query(sqlQuery, new MapRowToFilm());
     }
 
     @Override
@@ -161,7 +198,8 @@ public class DbFilmStorage implements FilmStorage {
 
     @Override
     public List<Genre> getAllGenres() {
-        String sqlQuery = "SELECT genre_id, genre_name FROM genres";
+        String sqlQuery = "SELECT genre_id, genre_name FROM genres ORDER BY genre_id ASC";
+
         return jdbcTemplate.query(sqlQuery, this::mapRowToGenre);
     }
 
@@ -177,7 +215,7 @@ public class DbFilmStorage implements FilmStorage {
 
     @Override
     public List<Rating> getAllRatings() {
-        String sqlQuery = "SELECT rating_id, rating_name FROM ratings";
+        String sqlQuery = "SELECT * FROM ratings";
         return jdbcTemplate.query(sqlQuery, this::mapRowToRating);
     }
 

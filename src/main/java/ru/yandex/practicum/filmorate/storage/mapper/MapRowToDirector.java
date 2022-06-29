@@ -12,7 +12,7 @@ public class MapRowToDirector implements RowMapper<Director> {
     public Director mapRow(ResultSet rs, int rowNum) throws SQLException {
         Director director = new Director();
         director.setId(rs.getInt("director_id"));
-        director.setName("director_name");
+        director.setName(rs.getString("director_name"));
         return director;
     }
 }

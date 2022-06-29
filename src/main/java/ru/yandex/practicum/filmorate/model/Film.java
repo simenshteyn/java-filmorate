@@ -25,7 +25,7 @@ public class Film {
     private Set<Genre> genres;
     @NotNull(message = "MPA can't be null")
     private Rating mpa;
-    private Set<Director> director;
+    private List<Director> directors = new ArrayList<>();
 
     public Map<String, Object> toMap() {
         Map<String, Object> values = new HashMap<>();
@@ -35,6 +35,7 @@ public class Film {
         values.put("film_release_date", releaseDate);
         values.put("film_duration", duration);
         if (getMpa() != null) values.put("film_rating_id", mpa.getId());
+        if (getDirectors().size() != 0) values.put("director_id", directors.get(0));
         return values;
     }
 }

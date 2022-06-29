@@ -3,10 +3,13 @@ package ru.yandex.practicum.filmorate.storage.mapper;
 import org.springframework.jdbc.core.RowMapper;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Rating;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashSet;
 
 public class MapRowToFilm implements RowMapper<Film> {
 
@@ -22,10 +25,15 @@ public class MapRowToFilm implements RowMapper<Film> {
         rating.setId(resultSet.getInt("film_rating_id"));
         result.setMpa(rating);
 
-        Director director = new Director();
-        director.setId(resultSet.getInt("director_id"));
-        director.setName("director_name");
-        result.getDirector().add(director);
+        Director directors = new Director();
+        directors.setId(resultSet.getInt("director_id"));
+        directors.setName(resultSet.getString("director_name"));
+        if (directors.getId() == 0) {
+            result.setDirectors(new ArrayList<>());
+        } else {
+            result.getDirectors().add(directors);
+        }
+
         return result;
     }
 
