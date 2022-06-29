@@ -1,6 +1,9 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Rating;
+import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.List;
 import java.util.Optional;
@@ -53,4 +56,35 @@ public interface FilmStorage {
      * @return List of all Film objects from storage.
      */
     List<Film> getAllFilms();
+
+    /**
+     * Save like by user to Film
+     * @param user User, who likes.
+     * @param film Film to set like.
+     * @return Film object.
+     */
+    Film saveFilmLike(User user, Film film);
+
+    /**
+     * Remove like from film.
+     * @param user User, who likes Film.
+     * @param film Film, which liked by User.
+     * @return Film object.
+     */
+    Film removeFilmLike(User user, Film film);
+
+    /**
+     * Get most liked films from storage.
+     * @param amount Max amount of Films to get from storage.
+     * @return List of Films.
+     */
+    List<Film> getTopFilms(int amount);
+
+    List<Genre> getAllGenres();
+
+    Optional<Genre> getGenre(int genreId);
+
+    List<Rating> getAllRatings();
+
+    Optional<Rating> getRating(int ratingId);
 }

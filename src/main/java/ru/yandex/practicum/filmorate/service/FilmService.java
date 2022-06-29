@@ -1,17 +1,18 @@
 package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Rating;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-import static java.util.Comparator.comparing;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Service
@@ -20,7 +21,8 @@ public class FilmService {
     private final UserStorage userStorage;
 
     @Autowired
-    public FilmService(FilmStorage filmStorage, UserStorage userStorage) {
+    public FilmService(@Qualifier("dbFilmStorage") FilmStorage filmStorage,
+                       @Qualifier("dbUserStorage") UserStorage userStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
     }
@@ -34,8 +36,7 @@ public class FilmService {
     public Film addLike(int userId, int filmId) {
         User user = userStorage.getUser(userId).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Unable to find user"));
         Film film = getFilmById(filmId);
-        film.getUsersLikedIds().add(userId);
-        user.getFilmsLiked().add(filmId);
+        filmStorage.saveFilmLike(user, film);
         return film;
     }
 
@@ -48,8 +49,7 @@ public class FilmService {
     public Film removeLike(int userId, int filmId) {
         User user = userStorage.getUser(userId).orElseThrow(()-> new ResponseStatusException(NOT_FOUND, "Unable to find user"));
         Film film = getFilmById(filmId);
-        film.getUsersLikedIds().remove(userId);
-        user.getFilmsLiked().remove(filmId);
+        filmStorage.removeFilmLike(user, film);
         return film;
     }
 
@@ -59,11 +59,7 @@ public class FilmService {
      * @return List of Film objects.
      */
     public List<Film> showTopFilms(int amount) {
-        return filmStorage.getAllFilms().stream()
-                .distinct()
-                .sorted(comparing(Film::countUsersLiked).reversed().thenComparing(Film::getName))
-                .limit(amount)
-                .collect(Collectors.toList());
+        return filmStorage.getTopFilms(amount);
     }
 
     public List<Film> getAllFilms() { return filmStorage.getAllFilms(); }
@@ -77,4 +73,16 @@ public class FilmService {
     }
 
     public Film addFilm(Film film) { return filmStorage.addFilm(film); }
+
+    public List<Genre> getAllGenres() { return filmStorage.getAllGenres(); }
+
+    public Genre getGenreById(int id) {
+        return filmStorage.getGenre(id).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Unable to find genre"));
+    }
+
+    public List<Rating> getAllRatings() { return filmStorage.getAllRatings(); }
+
+    public Rating getRatingById(int id) {
+        return filmStorage.getRating(id).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Unable to find rating"));
+    }
 }

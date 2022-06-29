@@ -1,11 +1,8 @@
 package ru.yandex.practicum.filmorate.model;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import ru.yandex.practicum.filmorate.validator.ReleaseDate;
 
@@ -25,7 +22,19 @@ public class Film {
     private int duration;
     private Set<Integer> usersLikedIds = new HashSet<>();
     public int countUsersLiked() { return usersLikedIds.size(); }
-    private Set<Genre> genres = new HashSet<>();
-    private Rating rating;
+    private Set<Genre> genres;
+    @NotNull(message = "MPA can't be null")
+    private Rating mpa;
+
+    public Map<String, Object> toMap() {
+        Map<String, Object> values = new HashMap<>();
+        values.put("film_id", id);
+        values.put("film_name", name);
+        values.put("film_description", description);
+        values.put("film_release_date", releaseDate);
+        values.put("film_duration", duration);
+        if (getMpa() != null) values.put("film_rating_id", mpa.getId());
+        return values;
+    }
 }
 

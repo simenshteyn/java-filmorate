@@ -1,14 +1,21 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Rating;
+import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static java.util.Comparator.comparing;
+
 @Component
+@Qualifier("inMemoryFilmStorage")
 public class InMemoryFilmStorage implements FilmStorage {
     private final List<Film> storage = new ArrayList<>();
     private int idCounter = 0;
@@ -57,6 +64,49 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public List<Film> getAllFilms() {
         return storage;
+    }
+
+    @Override
+    public Film saveFilmLike(User user, Film film) {
+        film.getUsersLikedIds().add(user.getId());
+        user.getFilmsLiked().add(film.getId());
+        return film;
+    }
+
+    @Override
+    public Film removeFilmLike(User user, Film film) {
+        film.getUsersLikedIds().remove(user.getId());
+        user.getFilmsLiked().remove(film.getId());
+        return film;
+    }
+
+    @Override
+    public List<Film> getTopFilms(int amount) {
+        return getAllFilms().stream()
+                .distinct()
+                .sorted(comparing(Film::countUsersLiked).reversed().thenComparing(Film::getName))
+                .limit(amount)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Genre> getAllGenres() {
+        return null;
+    }
+
+    @Override
+    public Optional<Genre> getGenre(int filmId) {
+        return Optional.empty();
+    }
+
+    @Override
+    public List<Rating> getAllRatings() {
+        return null;
+    }
+
+    @Override
+    public Optional<Rating> getRating(int ratingId) {
+        return Optional.empty();
     }
 
     private int findFilmIndexById(int id) {

@@ -1,14 +1,13 @@
 package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
@@ -17,7 +16,7 @@ public class UserService {
     private final UserStorage storage;
 
     @Autowired
-    public UserService(UserStorage storage) {
+    public UserService(@Qualifier("dbUserStorage") UserStorage storage) {
         this.storage = storage;
     }
 
@@ -28,11 +27,7 @@ public class UserService {
      * @return List of Users if addition was successfull.
      */
     public List<User> makeFriends(int firstUserId, int secondUserId) {
-        User first = getUserById(firstUserId);
-        User second = getUserById(secondUserId);
-        first.getFriends().add(secondUserId);
-        second.getFriends().add(firstUserId);
-        return List.of(first, second);
+        return storage.saveFriendship(firstUserId, secondUserId);
     }
 
     /**
@@ -42,11 +37,7 @@ public class UserService {
      * @return List of Users with removed friendship.
      */
     public List<User> removeFriends(int firstUserId, int secondUserId) {
-        User first = getUserById(firstUserId);
-        User second = getUserById(secondUserId);
-        first.getFriends().remove(secondUserId);
-        second.getFriends().remove(firstUserId);
-        return List.of(first, second);
+        return storage.removeFriendship(firstUserId, secondUserId);
     }
 
     /**
@@ -56,14 +47,7 @@ public class UserService {
      * @return Set of common friends IDs.
      */
     public List<User> showCommonFriends(int firstUserId, int secondUserId) {
-        User first = getUserById(firstUserId);
-        User second = getUserById(secondUserId);
-        List<User> result = new ArrayList<>();
-        first.getFriends().stream()
-                .filter(second.getFriends()::contains)
-                .collect(Collectors.toSet())
-                .forEach(i -> result.add(getUserById(i)));
-        return result;
+        return storage.getCommonFriends(firstUserId, secondUserId);
     }
 
     public List<User> getAllUsers() { return storage.getAllUsers(); }
