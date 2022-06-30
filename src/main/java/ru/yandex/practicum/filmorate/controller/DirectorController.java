@@ -20,39 +20,32 @@ public class DirectorController {
         this.directorService = directorService;
     }
 
-
-    // Возвращает список фильмов режиссера отсортированных по количеству лайков или году выпуска
     @GetMapping("/films/director/{directorId}")
     public List<Film> getSortedFilmsByDirectors(@PathVariable int directorId,
                                                 @RequestParam(required = false) String sortBy) {
         return directorService.getSortedFilmsByDirectors(directorId, sortBy);
     }
 
-    // Список всех режиссёров
     @GetMapping("/directors")
     public List<Director> getAllDirectors() {
         return directorService.getAllDirectors();
     }
 
-    // Получение режиссёра по id
     @GetMapping("/directors/{id}")
     public Director getDirectorById(@PathVariable int id) {
         return directorService.getDirectorById(id);
     }
 
-    // Создание режиссёра
     @PostMapping("/directors")
     public Director addDirector(@RequestBody Director director) {
         return directorService.addDirector(director);
     }
 
-    // Изменение режиссёра
     @PutMapping("/directors")
     public Director updateDirector(@RequestBody Director director) {
         return directorService.updateDirector(director);
     }
-
-    // Удаление режиссёра
+    
     @DeleteMapping("/directors/{id}")
     public void deleteDirectorById(@PathVariable int id) {
         directorService.deleteDirectorById(id);
