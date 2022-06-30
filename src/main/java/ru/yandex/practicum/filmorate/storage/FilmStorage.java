@@ -87,4 +87,6 @@ public interface FilmStorage {
     List<Rating> getAllRatings();
 
     Optional<Rating> getRating(int ratingId);
+
+    List<Film> searchFilmsByNameAndDirectors(String query, List<String> by);
 }

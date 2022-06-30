@@ -103,4 +103,9 @@ public class FilmController {
     public ResponseEntity<?> getRatingById(@PathVariable int id) {
         return ResponseEntity.ok(filmService.getRatingById(id));
     }
+
+    @GetMapping("/films/search")
+    public List<Film> searchFilmsByNameAndDirectors(@RequestParam String query, @RequestParam List<String> by) {
+        return filmService.searchFilmsByNameAndDirectors(query, by);
+    }
 }
