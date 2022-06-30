@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.storage;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
@@ -9,12 +10,11 @@ import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.storage.mapper.MapRowToDirector;
 import ru.yandex.practicum.filmorate.storage.mapper.MapRowToFilm;
-import ru.yandex.practicum.filmorate.storage.mapper.MapRowToFilmDirector;
+import ru.yandex.practicum.filmorate.storage.mapper.MapRowToGenre;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
@@ -57,7 +57,7 @@ public class DbFilmStorage implements FilmStorage {
         String sqlQuerySearch = "SELECT film_id, film_name, film_description, film_release_date, film_duration " +
                 "FROM films WHERE film_id = ?";
         Optional<Film> result = Optional.ofNullable(
-                jdbcTemplate.queryForObject(sqlQuerySearch, this::mapRowToFilm, filmId)
+                jdbcTemplate.queryForObject(sqlQuerySearch, new BeanPropertyRowMapper<>(Film.class), filmId)
         );
         String sqlQuery = "DELETE FROM films WHERE film_id = ?";
         jdbcTemplate.update(sqlQuery, filmId);
@@ -75,7 +75,7 @@ public class DbFilmStorage implements FilmStorage {
         try {
             String sqlQuerySearch = "SELECT film_id, film_name, film_description, film_release_date, film_duration, film_rating_id " +
                     "FROM films WHERE film_id = ?";
-            jdbcTemplate.queryForObject(sqlQuerySearch, this::mapRowToFilm, filmId);
+            jdbcTemplate.queryForObject(sqlQuerySearch, new BeanPropertyRowMapper<>(Film.class), filmId);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -133,7 +133,7 @@ public class DbFilmStorage implements FilmStorage {
 
                 String sqlQueryGenres = "SELECT g.genre_id, g.genre_name FROM film_genres AS fg " +
                         "JOIN genres AS g ON g.genre_id = fg.genre_id WHERE fg.film_id = ?";
-                List<Genre> genres = jdbcTemplate.query(sqlQueryGenres, this::mapRowToGenre, filmId);
+                List<Genre> genres = jdbcTemplate.query(sqlQueryGenres, new MapRowToGenre(), filmId);
                 if (genres.size() > 0) {
                     film.setGenres(new HashSet<>());
                     genres.forEach(g -> film.getGenres().add(g));
@@ -162,12 +162,12 @@ public class DbFilmStorage implements FilmStorage {
     @Override
     public List<Film> getFilms(int limit, int offset) {
         String sqlQuery = "SELECT film_id, film_name, film_description, film_release_date, film_duration, film_rating_id FROM films LIMIT ? OFFSET ?";
-        return jdbcTemplate.query(sqlQuery, this::mapRowToFilm, limit, offset);
+        return jdbcTemplate.query(sqlQuery, new BeanPropertyRowMapper<>(Film.class), limit, offset);
     }
 
     @Override
     public List<Film> getAllFilms() {
-        String sqlQuery = "SELECT * FROM films AS f LEFT JOIN film_directors AS fd ON fd.film_id = f.film_id LEFT JOIN directors AS d ON fd.director_id = d.director_id";
+        String sqlQuery = "SELECT f.film_id, f.film_name, f.film_description, f.film_release_date, f.film_duration, f.film_rating_id, d.director_id, d.director_name FROM films AS f LEFT JOIN film_directors AS fd ON fd.film_id = f.film_id LEFT JOIN directors AS d ON fd.director_id = d.director_id";
         return jdbcTemplate.query(sqlQuery, new MapRowToFilm());
     }
 
@@ -187,7 +187,7 @@ public class DbFilmStorage implements FilmStorage {
 
     @Override
     public List<Film> getTopFilms(int amount) {
-        String sqlQuery = "SELECT f.film_id, film_name, film_description, film_release_date, film_duration, film_rating_id " +
+        String sqlQuery = "SELECT f.film_id, f.film_name, f.film_description, f.film_release_date, f.film_duration, f.film_rating_id " +
                             "FROM films AS f " +
                                  "LEFT JOIN films_liked AS fl " +
                                       "ON f.film_id = fl.film_id " +
@@ -200,14 +200,14 @@ public class DbFilmStorage implements FilmStorage {
     public List<Genre> getAllGenres() {
         String sqlQuery = "SELECT genre_id, genre_name FROM genres ORDER BY genre_id ASC";
 
-        return jdbcTemplate.query(sqlQuery, this::mapRowToGenre);
+        return jdbcTemplate.query(sqlQuery, new MapRowToGenre());
     }
 
     @Override
     public Optional<Genre> getGenre(int genreId) {
         try {
             String sqlQuery = "SELECT genre_id, genre_name FROM genres WHERE genre_id = ?";
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sqlQuery, this::mapRowToGenre, genreId));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sqlQuery, new MapRowToGenre(), genreId));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -215,7 +215,7 @@ public class DbFilmStorage implements FilmStorage {
 
     @Override
     public List<Rating> getAllRatings() {
-        String sqlQuery = "SELECT * FROM ratings";
+        String sqlQuery = "SELECT rating_id, rating_name FROM ratings";
         return jdbcTemplate.query(sqlQuery, this::mapRowToRating);
     }
 
@@ -239,13 +239,6 @@ public class DbFilmStorage implements FilmStorage {
         Rating rating = new Rating();
         rating.setId(resultSet.getInt("film_rating_id"));
         result.setMpa(rating);
-        return result;
-    }
-
-    private Genre mapRowToGenre(ResultSet resultSet, int rowNum) throws SQLException {
-        Genre result = new Genre();
-        result.setId(resultSet.getInt("genre_id"));
-        result.setName(resultSet.getString("genre_name"));
         return result;
     }
 
