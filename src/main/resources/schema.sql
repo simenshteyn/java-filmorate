@@ -139,7 +139,6 @@ CREATE TABLE IF NOT EXISTS events (
     user_id            integer   NOT NULL,
     event_type_id      integer   NOT NULL,
     event_operation_id integer   NOT NULL,
-    event_pk_id        integer   NOT NULL,
     entity_id          integer   NOT NULL,
     FOREIGN KEY (user_id)
         REFERENCES users (user_id)
