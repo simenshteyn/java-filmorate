@@ -252,4 +252,21 @@ public class DbFilmStorage implements FilmStorage {
     private Film getFilmById(int id) {
         return getFilm(id).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Unable to find film"));
     }
+
+    @Override
+    public Map<Integer, Set<Integer>> getLikes() {
+        String sql = "SELECT user_id, film_id " +
+                "FROM films_liked";
+
+        Map<Integer, Set<Integer>> likes = new HashMap<>();
+        jdbcTemplate.query(sql, (rs) -> {
+            Integer userId = rs.getInt("user_id");
+            Integer filmId = rs.getInt("film_id");
+            likes.merge(userId, new HashSet<>(Set.of(filmId)), (oldValue, newValue) -> {
+                oldValue.add(filmId);
+                return oldValue;
+            });
+        });
+        return likes;
+    }
 }
