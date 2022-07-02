@@ -36,7 +36,7 @@ public class DirectorDao {
             throw new ResponseStatusException(NOT_FOUND, "Unable to find director's id");
         }
 
-        String sql = "SELECT * FROM films AS f " +
+        String sql = "SELECT f.film_id, f.film_name, f.film_description, f.film_release_date, f.film_duration, f.film_rating_id, d.director_id, d.director_name FROM films AS f " +
                 "LEFT JOIN film_directors AS fd ON fd.film_id = f.film_id " +
                 "LEFT JOIN directors AS d ON fd.director_id = d.director_id " +
                 "WHERE fd.director_id = ?";
@@ -62,7 +62,7 @@ public class DirectorDao {
     }
 
     public List<Director> getAllDirectors() {
-        String sql = "SELECT * FROM directors";
+        String sql = "SELECT director_id, director_name FROM directors";
 
         return jdbcTemplate.query(sql, new MapRowToDirector());
     }
@@ -74,7 +74,7 @@ public class DirectorDao {
             throw new ResponseStatusException(NOT_FOUND, "Unable to find director's id");
         }
 
-        String sql = "SELECT * FROM directors WHERE director_id = ?";
+        String sql = "SELECT director_id, director_name FROM directors WHERE director_id = ?";
 
         return jdbcTemplate.queryForObject(sql, new MapRowToDirector(), id);
     }
@@ -84,7 +84,7 @@ public class DirectorDao {
                 "VALUES (?)";
 
         jdbcTemplate.update(sql, director.getName());
-        return jdbcTemplate.queryForObject("SELECT * FROM directors WHERE director_name = ?", new MapRowToDirector(), director.getName());
+        return jdbcTemplate.queryForObject("SELECT director_id, director_name FROM directors WHERE director_name = ?", new MapRowToDirector(), director.getName());
     }
 
     public Director updateDirector(Director director) {
@@ -103,11 +103,11 @@ public class DirectorDao {
         return getDirectorById(director.getId());
     }
 
-    public void deleteDirectorById(int id) {
+    public void deleteDirectorById(int directorId) {
         String sqlDeleteDirector = "DELETE FROM directors WHERE director_id = ?";
-        jdbcTemplate.update(sqlDeleteDirector, id);
+        jdbcTemplate.update(sqlDeleteDirector, directorId);
 
         String sqlDeleteFilmDirector = "DELETE FROM film_directors WHERE director_id = ?";
-        jdbcTemplate.update(sqlDeleteFilmDirector, id);
+        jdbcTemplate.update(sqlDeleteFilmDirector, directorId);
     }
 }
