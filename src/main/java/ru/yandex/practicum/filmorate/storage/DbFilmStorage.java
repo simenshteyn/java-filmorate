@@ -9,13 +9,11 @@ import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.storage.mapper.MapRowToDirector;
 import ru.yandex.practicum.filmorate.storage.mapper.MapRowToFilm;
-import ru.yandex.practicum.filmorate.storage.mapper.MapRowToFilmDirector;
 import ru.yandex.practicum.filmorate.storage.mapper.MapRowToGenre;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
@@ -265,8 +263,6 @@ public class DbFilmStorage implements FilmStorage {
     private Film getFilmById(int id) {
         return getFilm(id).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Unable to find film"));
     }
-//<<<<<<< HEAD
-//=======
 
     @Override
     public List<Film> searchFilmsByNameAndDirectors(String query, List<String> searchBy) {
@@ -324,6 +320,4 @@ public class DbFilmStorage implements FilmStorage {
         }
         return result;
     }
-
-//>>>>>>> parent of 328d6b8 (fix: resolve issues)
 }
