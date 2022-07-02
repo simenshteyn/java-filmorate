@@ -109,6 +109,11 @@ public class InMemoryFilmStorage implements FilmStorage {
         return Optional.empty();
     }
 
+    @Override
+    public List<Film> searchFilmsByNameAndDirectors(String query, List<String> by) {
+        return null;
+    }
+
     private int findFilmIndexById(int id) {
         Optional<Film> result = storage.stream().filter(i -> i.getId() == id).findAny();
         return result.isEmpty() ? -1 : storage.indexOf(result.get());
