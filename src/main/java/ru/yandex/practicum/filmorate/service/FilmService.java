@@ -85,4 +85,8 @@ public class FilmService {
     public Rating getRatingById(int id) {
         return filmStorage.getRating(id).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Unable to find rating"));
     }
+
+    public List<Film> searchFilmsByNameAndDirectors(String query, List<String> by) {
+        return filmStorage.searchFilmsByNameAndDirectors(query, by);
+    }
 }

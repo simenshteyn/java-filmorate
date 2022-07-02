@@ -90,5 +90,7 @@ public interface FilmStorage {
 
     Optional<Rating> getRating(int ratingId);
 
+    List<Film> searchFilmsByNameAndDirectors(String query, List<String> by);
+
     Map<Integer, Set<Integer>> getLikes();
 }

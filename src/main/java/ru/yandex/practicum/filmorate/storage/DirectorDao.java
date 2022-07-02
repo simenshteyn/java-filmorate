@@ -52,18 +52,17 @@ public class DirectorDao {
             }
         }
 
-        switch (sortBy) {
-            case "year":
-                return film.stream().sorted(Comparator.comparing(Film::getReleaseDate)).collect(Collectors.toList());
-            case "likes":
-                return film.stream().sorted(Comparator.comparing(o -> o.getUsersLikedIds().size())).collect(Collectors.toList());
+        if(sortBy.equals("year")) {
+           return film.stream().sorted(Comparator.comparing(Film::getReleaseDate)).collect(Collectors.toList());
+        } else if (sortBy.equals("likes")) {
+            return film.stream().sorted(Comparator.comparing(o -> o.getUsersLikedIds().size())).collect(Collectors.toList());
         }
 
         return film;
     }
 
     public List<Director> getAllDirectors() {
-        String sql = "SELECT * FROM directors";
+        String sql = "SELECT director_id, director_name FROM directors";
 
         return jdbcTemplate.query(sql, new MapRowToDirector());
     }
