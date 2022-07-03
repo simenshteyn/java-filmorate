@@ -2,11 +2,16 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.DirectorService;
+import ru.yandex.practicum.filmorate.validator.FilmorateValidationErrorBuilder;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -37,13 +42,23 @@ public class DirectorController {
     }
 
     @PostMapping("/directors")
-    public Director addDirector(@RequestBody Director director) {
-        return directorService.addDirector(director);
+    public ResponseEntity<?> addDirector(HttpServletRequest request, @RequestBody @Valid Director director, Errors errors) {
+        if (errors.hasErrors()) {
+            log.info("Validation error with request: " + request.getRequestURI());
+            return ResponseEntity.badRequest()
+                    .body(FilmorateValidationErrorBuilder.fromBindingErrors(errors));
+        }
+        return ResponseEntity.ok(directorService.addDirector(director));
     }
 
     @PutMapping("/directors")
-    public Director updateDirector(@RequestBody Director director) {
-        return directorService.updateDirector(director);
+    public ResponseEntity<?> updateDirector(HttpServletRequest request, @RequestBody @Valid Director director, Errors errors) {
+        if (errors.hasErrors()) {
+            log.info("Validation error with request: " + request.getRequestURI());
+            return ResponseEntity.badRequest()
+                    .body(FilmorateValidationErrorBuilder.fromBindingErrors(errors));
+        }
+        return ResponseEntity.ok(directorService.updateDirector(director));
     }
 
     @DeleteMapping("/directors/{id}")
