@@ -6,7 +6,9 @@ import ru.yandex.practicum.filmorate.model.Rating;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 public interface FilmStorage {
     /**
@@ -91,4 +93,6 @@ public interface FilmStorage {
     List<Film> searchFilmsByNameAndDirectors(String query, List<String> by);
 
     Optional<List<Film>> getCommonFilmsSortedByPopularity(int userId, int friendId);
+
+    Map<Integer, Set<Integer>> getLikes();
 }

@@ -277,6 +277,23 @@ public class DbFilmStorage implements FilmStorage {
     }
 
     @Override
+    public Map<Integer, Set<Integer>> getLikes() {
+        String sql = "SELECT user_id, film_id " +
+                "FROM films_liked";
+
+        Map<Integer, Set<Integer>> likes = new HashMap<>();
+        jdbcTemplate.query(sql, (rs) -> {
+            Integer userId = rs.getInt("user_id");
+            Integer filmId = rs.getInt("film_id");
+            likes.merge(userId, new HashSet<>(Set.of(filmId)), (oldValue, newValue) -> {
+                oldValue.add(filmId);
+                return oldValue;
+            });
+        });
+        return likes;
+    }
+
+    @Override
     public List<Film> searchFilmsByNameAndDirectors(String query, List<String> searchBy) {
         List<Film> result = new ArrayList<>();
         String queryModified = "%" + query.toLowerCase() + "%";

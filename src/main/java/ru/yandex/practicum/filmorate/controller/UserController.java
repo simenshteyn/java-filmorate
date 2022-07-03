@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.RecommendationService;
 import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.validator.FilmorateValidationErrorBuilder;
 
@@ -17,10 +18,12 @@ import java.util.*;
 @Slf4j
 public class UserController {
     private final UserService userService;
+    private final RecommendationService recommendationService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, RecommendationService recommendationService) {
         this.userService = userService;
+        this.recommendationService = recommendationService;
     }
 
     @GetMapping("/users")
@@ -86,5 +89,10 @@ public class UserController {
     @DeleteMapping("/users/{userId}")
     public ResponseEntity<?> delete(@PathVariable int userId) {
         return ResponseEntity.ok(userService.deleteUserById(userId));
+    }
+
+    @GetMapping("/users/{id}/recommendations")
+    ResponseEntity<?> findRecommendationsById(@PathVariable int id) {
+        return ResponseEntity.ok(recommendationService.findRecommendedFilms(id));
     }
 }
