@@ -113,6 +113,11 @@ public class InMemoryFilmStorage implements FilmStorage {
         return null;
     }
 
+    @Override
+    public Optional<List<Film>> getCommonFilmsSortedByPopularity(int userId, int friendId) {
+        return Optional.empty();
+    }
+
     private int findFilmIndexById(int id) {
         Optional<Film> result = storage.stream().filter(i -> i.getId() == id).findAny();
         return result.isEmpty() ? -1 : storage.indexOf(result.get());

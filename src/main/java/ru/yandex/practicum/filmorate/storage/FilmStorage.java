@@ -92,5 +92,7 @@ public interface FilmStorage {
 
     List<Film> searchFilmsByNameAndDirectors(String query, List<String> by);
 
+    Optional<List<Film>> getCommonFilmsSortedByPopularity(int userId, int friendId);
+
     Map<Integer, Set<Integer>> getLikes();
 }

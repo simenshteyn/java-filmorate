@@ -113,4 +113,9 @@ public class FilmController {
     public ResponseEntity<?> deleteFilmById(@PathVariable int filmId) {
         return ResponseEntity.ok(filmService.deleteFilmById(filmId));
     }
+
+    @GetMapping("/films/common")
+    public ResponseEntity<?> getCommonFilmsSortedByPopularity(@RequestParam int userId, @RequestParam int friendId) {
+        return ResponseEntity.ok(filmService.getCommonFilmsSortedByPopularity(userId, friendId));
+    }
 }
