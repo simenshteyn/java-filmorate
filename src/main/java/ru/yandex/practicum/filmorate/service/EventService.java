@@ -17,6 +17,7 @@ public class EventService {
     }
 
     public void addLike(int filmId, int userId) {
+
         dbEventStorage.addLike(filmId, userId);
     }
 
