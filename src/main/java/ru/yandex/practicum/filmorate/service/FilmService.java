@@ -58,8 +58,8 @@ public class FilmService {
      * @param amount Size of List to show.
      * @return List of Film objects.
      */
-    public List<Film> showTopFilms(int amount) {
-        return filmStorage.getTopFilms(amount);
+    public List<Film> showTopFilms(int amount, int genreId, int year) {
+        return filmStorage.getTopFilms(amount, genreId, year);
     }
 
     public List<Film> getAllFilms() { return filmStorage.getAllFilms(); }

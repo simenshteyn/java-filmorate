@@ -186,12 +186,25 @@ public class DbFilmStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getTopFilms(int amount) {
+    public List<Film> getTopFilms(int amount, int genreId, int year) {
+        String filterQuery;
+        if (genreId != -1 && year != -1) {
+            filterQuery = String.format("WHERE YEAR(f.film_release_date) = %d AND fg.genre_id = %d", year, genreId);
+        } else if (genreId != -1) {
+            filterQuery = String.format("WHERE fg.genre_id = %d", genreId);
+        } else if (year != -1) {
+            filterQuery = String.format("WHERE YEAR(f.film_release_date) = %d", year);
+        } else {
+            filterQuery = "";
+        }
+
         String sqlQuery = "SELECT f.film_id, f.film_name, f.film_description, f.film_release_date, f.film_duration, f.film_rating_id " +
                             "FROM films AS f " +
                                  "LEFT JOIN films_liked AS fl " +
-                                      "ON f.film_id = fl.film_id " +
-                           "GROUP BY f.film_id " +
+                                           "ON f.film_id = fl.film_id " +
+                                 "LEFT JOIN film_genres AS fg " +
+                                            "ON fg.film_id = f.film_id " + filterQuery +
+                          " GROUP BY f.film_id " +
                            "ORDER BY COUNT(DISTINCT fl.user_id) DESC LIMIT ?";
         List<Film> filmsFound = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, amount);
         List<Film> result = new ArrayList<>();
