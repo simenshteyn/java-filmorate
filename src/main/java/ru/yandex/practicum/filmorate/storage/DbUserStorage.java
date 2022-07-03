@@ -94,6 +94,9 @@ public class DbUserStorage implements UserStorage {
 
     @Override
     public Optional<List<User>> getUserFriends(int userId) {
+        Optional<User> user = getUser(userId);
+        if (user.isEmpty()) return Optional.empty();
+
         try {
             String sqlQuery = "SELECT user_id, user_email, user_login, user_name, user_birthday FROM users WHERE user_id IN " +
                     "(SELECT to_id FROM friendships WHERE from_id = ? AND is_approved = true)";
