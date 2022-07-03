@@ -93,4 +93,8 @@ public class FilmService {
     public Film deleteFilmById(int filmId) {
         return filmStorage.removeFilm(filmId).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Unable to find film"));
     }
+
+    public List<Film> getCommonFilmsSortedByPopularity(int userId, int friendId) {
+        return filmStorage.getCommonFilmsSortedByPopularity(userId, friendId).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Unable to find users"));
+    }
 }

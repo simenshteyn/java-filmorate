@@ -319,4 +319,23 @@ public class DbFilmStorage implements FilmStorage {
         }
         return result;
     }
+
+    @Override
+    public Optional<List<Film>> getCommonFilmsSortedByPopularity(int userId, int friendId) {
+        List<Film> result = new ArrayList<>();
+        try {
+            String sqlQuery = "SELECT film_id, film_name, film_description, film_release_date, film_duration, film_rating_id " +
+                                "FROM films WHERE film_id IN " +
+                                     "(SELECT DISTINCT fl1.film_id "+
+                                        "FROM films_liked AS fl1 " +
+                                        "JOIN films_liked AS fl2 " +
+                                             "ON fl1.film_id = fl2.film_id " +
+                                             "WHERE fl1.user_id = ? AND fl2.user_id = ?)";
+            List<Film> films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, userId, friendId);
+            films.forEach(f -> result.add(getFilmById(f.getId())));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+        return Optional.of(result);
+    }
 }

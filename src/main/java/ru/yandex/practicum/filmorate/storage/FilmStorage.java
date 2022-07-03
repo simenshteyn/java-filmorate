@@ -89,4 +89,6 @@ public interface FilmStorage {
     Optional<Rating> getRating(int ratingId);
 
     List<Film> searchFilmsByNameAndDirectors(String query, List<String> by);
+
+    Optional<List<Film>> getCommonFilmsSortedByPopularity(int userId, int friendId);
 }
