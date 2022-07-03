@@ -71,7 +71,7 @@ public class DbEventStorage implements EventStorage {
                 "JOIN event_operations eo ON e.event_operation_id = eo.event_operation_id" +
                " JOIN event_Types et ON e.event_type_id = et.event_type_id" +
                " WHERE e.user_id = ?";
-        return jdbcTemplate.query(getFeedQuery, this::mapRowToEvent, id);
+        return jdbcTemplate.query(getFeedQuery, new MapRowToEvent(), id);
 
     }
 
