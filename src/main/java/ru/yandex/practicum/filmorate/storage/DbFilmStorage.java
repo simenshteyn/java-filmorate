@@ -278,8 +278,7 @@ public class DbFilmStorage implements FilmStorage {
 
     @Override
     public Map<Integer, Set<Integer>> getLikes() {
-        String sql = "SELECT user_id, film_id " +
-                "FROM films_liked";
+        String sql = "SELECT user_id, film_id FROM films_liked";
 
         Map<Integer, Set<Integer>> likes = new HashMap<>();
         jdbcTemplate.query(sql, (rs) -> {
@@ -298,55 +297,48 @@ public class DbFilmStorage implements FilmStorage {
         List<Film> result = new ArrayList<>();
         String queryModified = "%" + query.toLowerCase() + "%";
 
+        String queryBase = "SELECT f.film_id, f.film_name, f.film_description, f.film_release_date, f.film_duration, f.film_rating_id, d.director_id, d.director_name " +
+                            "FROM films AS f " +
+                                 "LEFT JOIN film_directors AS fd " +
+                                           "ON fd.film_id = f.film_id " +
+                                 "LEFT JOIN directors AS d " +
+                                           "ON fd.director_id = d.director_id ";
         if (searchBy.size() == 1) {
-            if (searchBy.get(0).equals("title")) {
-                String sqlSearchByName = "SELECT f.film_id, f.film_name, f.film_description, f.film_release_date, f.film_duration, f.film_rating_id, d.director_id, d.director_name FROM films AS f " +
-                        "LEFT JOIN film_directors AS fd ON fd.film_id = f.film_id " +
-                        "LEFT JOIN directors AS d ON fd.director_id = d.director_id " +
-                        "WHERE LOWER(f.film_name) LIKE ?";
-                result = jdbcTemplate.query(sqlSearchByName, new MapRowToFilm(), queryModified);
-            }
-
-            if (searchBy.get(0).equals("director")) {
-                String sqlSearchByDir = "SELECT f.film_id, f.film_name, f.film_description, f.film_release_date, f.film_duration, f.film_rating_id, d.director_id, d.director_name FROM films AS f " +
-                        "LEFT JOIN film_directors AS fd ON fd.film_id = f.film_id " +
-                        "LEFT JOIN directors AS d ON fd.director_id = d.director_id " +
-                        "WHERE LOWER(d.director_name) LIKE ?";
-                result = jdbcTemplate.query(sqlSearchByDir, new MapRowToFilm(), queryModified);
+            switch (searchBy.get(0)) {
+                case "title":
+                    String sqlSearchByName = queryBase + "WHERE LOWER(f.film_name) LIKE ?";
+                    result = jdbcTemplate.query(sqlSearchByName, new MapRowToFilm(), queryModified);
+                    break;
+                case "director":
+                    String sqlSearchByDir = queryBase + "WHERE LOWER(d.director_name) LIKE ?";
+                    result = jdbcTemplate.query(sqlSearchByDir, new MapRowToFilm(), queryModified);
+                    break;
             }
         }
 
         if (searchBy.size() > 1) {
-            String sqlSearchByDir = "SELECT f.film_id, f.film_name, f.film_description, f.film_release_date, f.film_duration, f.film_rating_id, d.director_id, d.director_name FROM films AS f " +
-                    "LEFT JOIN film_directors AS fd ON fd.film_id = f.film_id " +
-                    "LEFT JOIN directors AS d ON fd.director_id = d.director_id " +
-                    "WHERE LOWER(d.director_name) LIKE ?";
+            String sqlSearchByDir = queryBase + "WHERE LOWER(d.director_name) LIKE ?";
 
             result = jdbcTemplate.query(sqlSearchByDir, new MapRowToFilm(), queryModified);
 
-            String sqlSearchByName = "SELECT f.film_id, f.film_name, f.film_description, f.film_release_date, f.film_duration, f.film_rating_id, d.director_id, d.director_name FROM films AS f " +
-                    "LEFT JOIN film_directors AS fd ON fd.film_id = f.film_id " +
-                    "LEFT JOIN directors AS d ON fd.director_id = d.director_id " +
-                    "WHERE LOWER(f.film_name) LIKE ?";
+            String sqlSearchByName = queryBase + "WHERE LOWER(f.film_name) LIKE ?";
             result.addAll(jdbcTemplate.query(sqlSearchByName, new MapRowToFilm(), queryModified));
         }
 
-        for (Film y : result) {
-            String sqlQueryGenres = "SELECT g.genre_id, g.genre_name FROM film_genres AS fg " +
-                    "JOIN genres AS g ON g.genre_id = fg.genre_id WHERE film_id = ?";
-            List<Genre> genres = jdbcTemplate.query(sqlQueryGenres, new MapRowToGenre(), y.getId());
-            if (genres.size() > 0) {
-                y.setGenres(new HashSet<>(genres));
-            }
-        }
-
-        for (Film z : result) {
-            String sqlQueryRating = "SELECT rating_id, rating_name FROM ratings WHERE rating_id = ?";
+        String sqlQueryGenres = "SELECT g.genre_id, g.genre_name " +
+                                  "FROM film_genres AS fg " +
+                                       "JOIN genres AS g " +
+                                            "ON g.genre_id = fg.genre_id " +
+                                 "WHERE film_id = ?";
+        String sqlQueryRating = "SELECT rating_id, rating_name FROM ratings WHERE rating_id = ?";
+        result.forEach(film -> {
+            List<Genre> genres = jdbcTemplate.query(sqlQueryGenres, new MapRowToGenre(), film.getId());
+            if (genres.size() > 0) film.setGenres(new HashSet<>(genres));
             Optional<Rating> rating = Optional.ofNullable(
-                    jdbcTemplate.queryForObject(sqlQueryRating, this::mapRowToRating, z.getMpa().getId())
+                    jdbcTemplate.queryForObject(sqlQueryRating, this::mapRowToRating, film.getMpa().getId())
             );
-            rating.ifPresent(z::setMpa);
-        }
+            rating.ifPresent(film::setMpa);
+        });
         return result;
     }
 
