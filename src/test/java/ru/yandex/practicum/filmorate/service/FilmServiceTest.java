@@ -76,7 +76,7 @@ class FilmServiceTest {
         filmStorage.addFilm(film1);
         filmStorage.addFilm(film2);
         filmStorage.addFilm(film3);
-        List<Film> result = filmService.showTopFilms(3);
+        List<Film> result = filmService.showTopFilms(3, 1, 2000);
         assertEquals(5, result.get(0).getUsersLikedIds().size());
         assertEquals(3, result.get(2).countUsersLiked());
 

@@ -65,8 +65,10 @@ public class FilmController {
     }
 
     @GetMapping("/films/popular")
-    public ResponseEntity<?> getTopFilms(@Positive @RequestParam(required = false, defaultValue = "10") int count) {
-        return ResponseEntity.ok(filmService.showTopFilms(count));
+    public ResponseEntity<?> getTopFilms(@Positive @RequestParam(required = false, defaultValue = "10") int count,
+                                         @RequestParam(required = false, defaultValue = "-1") int genreId,
+                                         @RequestParam(required = false, defaultValue = "-1") int year) {
+        return ResponseEntity.ok(filmService.showTopFilms(count, genreId, year));
     }
 
     @PostMapping("/films")
@@ -107,5 +109,20 @@ public class FilmController {
     @GetMapping("/mpa/{id}")
     public ResponseEntity<?> getRatingById(@PathVariable int id) {
         return ResponseEntity.ok(filmService.getRatingById(id));
+    }
+
+    @GetMapping("/films/search")
+    public List<Film> searchFilmsByNameAndDirectors(@RequestParam String query, @RequestParam List<String> by) {
+        return filmService.searchFilmsByNameAndDirectors(query, by);
+    }
+
+    @DeleteMapping("films/{filmId}")
+    public ResponseEntity<?> deleteFilmById(@PathVariable int filmId) {
+        return ResponseEntity.ok(filmService.deleteFilmById(filmId));
+    }
+
+    @GetMapping("/films/common")
+    public ResponseEntity<?> getCommonFilmsSortedByPopularity(@RequestParam int userId, @RequestParam int friendId) {
+        return ResponseEntity.ok(filmService.getCommonFilmsSortedByPopularity(userId, friendId));
     }
 }

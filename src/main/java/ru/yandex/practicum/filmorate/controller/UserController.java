@@ -6,24 +6,24 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.service.EventService;
+import ru.yandex.practicum.filmorate.service.RecommendationService;
 import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.validator.FilmorateValidationErrorBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.List;
+import java.util.*;
 
 @RestController
 @Slf4j
 public class UserController {
     private final UserService userService;
-    private final EventService eventService;
+    private final RecommendationService recommendationService;
 
     @Autowired
-    public UserController(UserService userService, EventService eventService) {
+    public UserController(UserService userService, RecommendationService recommendationService) {
         this.userService = userService;
-        this.eventService = eventService;
+        this.recommendationService = recommendationService;
     }
 
     @GetMapping("/users")
@@ -38,13 +38,11 @@ public class UserController {
 
     @PutMapping("/users/{id}/friends/{friendId}")
     public ResponseEntity<?> makeFriends(@PathVariable int id, @PathVariable int friendId) {
-        eventService.addFriend(id, friendId);
         return ResponseEntity.ok(userService.makeFriends(id, friendId));
     }
 
     @DeleteMapping("/users/{id}/friends/{friendId}")
     public ResponseEntity<?> removeFriends(@PathVariable int id, @PathVariable int friendId) {
-        eventService.removeFriend(id, friendId);
         return ResponseEntity.ok(userService.removeFriends(id, friendId));
     }
 
@@ -88,5 +86,13 @@ public class UserController {
         return ResponseEntity.ok(userService.updateUser(id, user));
     }
 
+    @DeleteMapping("/users/{userId}")
+    public ResponseEntity<?> delete(@PathVariable int userId) {
+        return ResponseEntity.ok(userService.deleteUserById(userId));
+    }
 
+    @GetMapping("/users/{id}/recommendations")
+    ResponseEntity<?> findRecommendationsById(@PathVariable int id) {
+        return ResponseEntity.ok(recommendationService.findRecommendedFilms(id));
+    }
 }

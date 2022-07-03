@@ -58,8 +58,8 @@ public class FilmService {
      * @param amount Size of List to show.
      * @return List of Film objects.
      */
-    public List<Film> showTopFilms(int amount) {
-        return filmStorage.getTopFilms(amount);
+    public List<Film> showTopFilms(int amount, int genreId, int year) {
+        return filmStorage.getTopFilms(amount, genreId, year);
     }
 
     public List<Film> getAllFilms() { return filmStorage.getAllFilms(); }
@@ -84,5 +84,17 @@ public class FilmService {
 
     public Rating getRatingById(int id) {
         return filmStorage.getRating(id).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Unable to find rating"));
+    }
+
+    public List<Film> searchFilmsByNameAndDirectors(String query, List<String> by) {
+        return filmStorage.searchFilmsByNameAndDirectors(query, by);
+    }
+
+    public Film deleteFilmById(int filmId) {
+        return filmStorage.removeFilm(filmId).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Unable to find film"));
+    }
+
+    public List<Film> getCommonFilmsSortedByPopularity(int userId, int friendId) {
+        return filmStorage.getCommonFilmsSortedByPopularity(userId, friendId).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Unable to find users"));
     }
 }
