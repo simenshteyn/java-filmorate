@@ -80,7 +80,7 @@ public interface FilmStorage {
      * @param amount Max amount of Films to get from storage.
      * @return List of Films.
      */
-    List<Film> getTopFilms(int amount);
+    List<Film> getTopFilms(int amount, int genreId, int year);
 
     List<Genre> getAllGenres();
 

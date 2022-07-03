@@ -60,8 +60,10 @@ public class FilmController {
     }
 
     @GetMapping("/films/popular")
-    public ResponseEntity<?> getTopFilms(@Positive @RequestParam(required = false, defaultValue = "10") int count) {
-        return ResponseEntity.ok(filmService.showTopFilms(count));
+    public ResponseEntity<?> getTopFilms(@Positive @RequestParam(required = false, defaultValue = "10") int count,
+                                         @RequestParam(required = false, defaultValue = "-1") int genreId,
+                                         @RequestParam(required = false, defaultValue = "-1") int year) {
+        return ResponseEntity.ok(filmService.showTopFilms(count, genreId, year));
     }
 
     @PostMapping("/films")
