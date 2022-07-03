@@ -54,13 +54,11 @@ public class FilmController {
 
     @PutMapping("/films/{id}/like/{userId}")
     public ResponseEntity<?> addLike(@PathVariable int id, @PathVariable int userId) {
-        eventService.addLike(id, userId);
         return ResponseEntity.ok(filmService.addLike(userId, id));
     }
 
     @DeleteMapping("/films/{id}/like/{userId}")
     public ResponseEntity<?> removeLike(@PathVariable int id, @PathVariable int userId) {
-        eventService.removeLike(id, userId);
         return ResponseEntity.ok(filmService.removeLike(userId, id));
     }
 

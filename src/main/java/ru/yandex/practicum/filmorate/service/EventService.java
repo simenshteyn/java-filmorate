@@ -16,15 +16,6 @@ public class EventService {
         this.dbEventStorage = dbEventStorage;
     }
 
-    public void addLike(int filmId, int userId) {
-
-        dbEventStorage.addLike(filmId, userId);
-    }
-
-    public void removeLike(int filmId, int userId) {
-        dbEventStorage.removeLike(filmId,userId);
-    }
-
     public void addFriend(int userId, int friendId) {
        dbEventStorage.addFriend(userId, friendId);
     }

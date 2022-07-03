@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.DbEventStorage;
 import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -15,11 +16,12 @@ import static org.junit.jupiter.api.Assertions.*;
 class UserServiceTest {
     static private UserStorage storage;
     static private UserService service;
+    static private DbEventStorage eventStorage;
 
     @BeforeAll
     static void beforeAll() {
         storage = new InMemoryUserStorage();
-        service = new UserService(storage);
+        service = new UserService(storage, eventStorage);
 
         User firstUser = new User();
         firstUser.setId(1);

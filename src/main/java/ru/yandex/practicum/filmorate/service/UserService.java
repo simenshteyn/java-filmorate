@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.DbEventStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.List;
@@ -14,10 +15,13 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @Service
 public class UserService {
     private final UserStorage storage;
+    private final DbEventStorage eventStorage;
 
     @Autowired
-    public UserService(@Qualifier("dbUserStorage") UserStorage storage) {
+    public UserService(@Qualifier("dbUserStorage") UserStorage storage,
+    DbEventStorage eventStorage) {
         this.storage = storage;
+        this.eventStorage = eventStorage;
     }
 
     /**
@@ -27,6 +31,7 @@ public class UserService {
      * @return List of Users if addition was successfull.
      */
     public List<User> makeFriends(int firstUserId, int secondUserId) {
+        eventStorage.addFriend(firstUserId, secondUserId);
         return storage.saveFriendship(firstUserId, secondUserId);
     }
 
@@ -37,6 +42,7 @@ public class UserService {
      * @return List of Users with removed friendship.
      */
     public List<User> removeFriends(int firstUserId, int secondUserId) {
+        eventStorage.removeFriend(firstUserId, secondUserId);
         return storage.removeFriendship(firstUserId, secondUserId);
     }
 
