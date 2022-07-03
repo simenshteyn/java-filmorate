@@ -108,4 +108,9 @@ public class FilmController {
     public List<Film> searchFilmsByNameAndDirectors(@RequestParam String query, @RequestParam List<String> by) {
         return filmService.searchFilmsByNameAndDirectors(query, by);
     }
+
+    @DeleteMapping("films/{filmId}")
+    public ResponseEntity<?> deleteFilmById(@PathVariable int filmId) {
+        return ResponseEntity.ok(filmService.deleteFilmById(filmId));
+    }
 }
