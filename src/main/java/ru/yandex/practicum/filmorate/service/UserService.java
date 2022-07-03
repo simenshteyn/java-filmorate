@@ -65,4 +65,8 @@ public class UserService {
     public User updateUser(int id, User user) {
         return storage.updateUser(id, user).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Unable to find user"));
     }
+
+    public User deleteUserById(int userId) {
+        return storage.removeUser(userId).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Unable to find user"));
+    }
 }
