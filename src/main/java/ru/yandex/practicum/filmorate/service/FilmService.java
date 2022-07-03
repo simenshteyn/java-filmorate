@@ -89,4 +89,8 @@ public class FilmService {
     public List<Film> searchFilmsByNameAndDirectors(String query, List<String> by) {
         return filmStorage.searchFilmsByNameAndDirectors(query, by);
     }
+
+    public Film deleteFilmById(int filmId) {
+        return filmStorage.removeFilm(filmId).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Unable to find film"));
+    }
 }

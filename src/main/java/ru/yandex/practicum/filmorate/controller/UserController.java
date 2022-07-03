@@ -12,7 +12,7 @@ import ru.yandex.practicum.filmorate.validator.FilmorateValidationErrorBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.List;
+import java.util.*;
 
 @RestController
 @Slf4j
@@ -84,6 +84,11 @@ public class UserController {
                     .body(FilmorateValidationErrorBuilder.fromBindingErrors(errors));
         }
         return ResponseEntity.ok(userService.updateUser(id, user));
+    }
+
+    @DeleteMapping("/users/{userId}")
+    public ResponseEntity<?> delete(@PathVariable int userId) {
+        return ResponseEntity.ok(userService.deleteUserById(userId));
     }
 
     @GetMapping("/users/{id}/recommendations")

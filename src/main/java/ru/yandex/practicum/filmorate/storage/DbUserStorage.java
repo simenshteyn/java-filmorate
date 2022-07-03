@@ -48,13 +48,18 @@ public class DbUserStorage implements UserStorage {
     }
 
     @Override
-    public User removeUser(int userId) {
-        String sqlQuerySearch = "SELECT user_id, user_email, user_login, user_name, user_birthday FROM users WHERE user_id = ?";
-        Optional<User> result = Optional.ofNullable(jdbcTemplate.queryForObject(sqlQuerySearch, this::mapRowToUser, userId));
-        if (result.isEmpty()) return null;
+    public Optional<User> removeUser(int userId) {
+        User result;
+        try {
+            String sqlQuerySearch = "SELECT user_id, user_email, user_login, user_name, user_birthday FROM users WHERE user_id = ?";
+            result = jdbcTemplate.queryForObject(sqlQuerySearch, this::mapRowToUser, userId);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
         String sqlQuery = "DELETE FROM users where user_id = ?";
         jdbcTemplate.update(sqlQuery, userId);
-        return result.get();
+        assert result != null;
+        return Optional.of(result);
     }
 
     @Override
@@ -89,6 +94,9 @@ public class DbUserStorage implements UserStorage {
 
     @Override
     public Optional<List<User>> getUserFriends(int userId) {
+        Optional<User> user = getUser(userId);
+        if (user.isEmpty()) return Optional.empty();
+
         try {
             String sqlQuery = "SELECT user_id, user_email, user_login, user_name, user_birthday FROM users WHERE user_id IN " +
                     "(SELECT to_id FROM friendships WHERE from_id = ? AND is_approved = true)";

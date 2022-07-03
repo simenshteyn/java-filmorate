@@ -193,7 +193,10 @@ public class DbFilmStorage implements FilmStorage {
                                       "ON f.film_id = fl.film_id " +
                            "GROUP BY f.film_id " +
                            "ORDER BY COUNT(DISTINCT fl.user_id) DESC LIMIT ?";
-        return jdbcTemplate.query(sqlQuery, this::mapRowToFilm, amount);
+        List<Film> filmsFound = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, amount);
+        List<Film> result = new ArrayList<>();
+        filmsFound.forEach((f) -> result.add(getFilmById(f.getId())));
+        return result;
     }
 
     @Override
