@@ -31,14 +31,8 @@ public class DbReviewStorage {
         if (!checkContainReview(review.getId())) {
             throw new ResponseStatusException(NOT_FOUND, "Unable to find review's id");
         }
-        String sql = "update reviews set " +
-                "review_id = ?, user_id = ?, film_id = ?, review_text = ?, is_positive = ?";
-        jdbcTemplate.update(sql,
-                review.getId(),
-                review.getUserId(),
-                review.getFilmId(),
-                review.getReviewText(),
-                review.getIsPositive());
+        String sql = "UPDATE reviews SET review_text = ?, is_positive = ? WHERE review_id = ?";
+        jdbcTemplate.update(sql, review.getReviewText(), review.getIsPositive(), review.getId());
         return getReviewById(review.getId());
     }
 
