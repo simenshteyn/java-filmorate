@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.model.Reviews;
+import ru.yandex.practicum.filmorate.storage.DbEventStorage;
 import ru.yandex.practicum.filmorate.storage.DbReviewStorage;
 
 import java.util.List;
@@ -17,10 +18,13 @@ public class ReviewService {
     private FilmService filmService;
 
     @Autowired
-    public ReviewService(DbReviewStorage reviewStorage, UserService userService, FilmService filmService) {
+    public ReviewService(DbReviewStorage reviewStorage,
+                         UserService userService,
+                         FilmService filmService) {
         this.reviewStorage = reviewStorage;
         this.userService = userService;
         this.filmService = filmService;
+
     }
 
     public Reviews addReview(Reviews review) {

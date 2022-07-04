@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Rating;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.DbEventStorage;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -19,12 +20,15 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 public class FilmService {
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
+    private final DbEventStorage dbEventStorage;
 
     @Autowired
     public FilmService(@Qualifier("dbFilmStorage") FilmStorage filmStorage,
-                       @Qualifier("dbUserStorage") UserStorage userStorage) {
+                       @Qualifier("dbUserStorage") UserStorage userStorage,
+                       DbEventStorage eventStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
+        this.dbEventStorage = eventStorage;
     }
 
     /**
@@ -37,6 +41,7 @@ public class FilmService {
         User user = userStorage.getUser(userId).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Unable to find user"));
         Film film = getFilmById(filmId);
         filmStorage.saveFilmLike(user, film);
+        dbEventStorage.addLike(filmId, userId);
         return film;
     }
 
@@ -50,6 +55,7 @@ public class FilmService {
         User user = userStorage.getUser(userId).orElseThrow(()-> new ResponseStatusException(NOT_FOUND, "Unable to find user"));
         Film film = getFilmById(filmId);
         filmStorage.removeFilmLike(user, film);
+        dbEventStorage.removeLike(filmId, userId);
         return film;
     }
 

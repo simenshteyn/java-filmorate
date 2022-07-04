@@ -7,24 +7,28 @@ import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.model.Reviews;
 import ru.yandex.practicum.filmorate.storage.mapper.MapRowToReview;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Component
 public class DbReviewStorage {
     private final JdbcTemplate jdbcTemplate;
+    private DbEventStorage eventStorage;
 
-    public DbReviewStorage(JdbcTemplate jdbcTemplate) {
+    public DbReviewStorage(JdbcTemplate jdbcTemplate, DbEventStorage eventStorage) {
         this.jdbcTemplate = jdbcTemplate;
+        this.eventStorage = eventStorage;
     }
 
     public Reviews addReview(Reviews review) {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate).withTableName("reviews")
                 .usingGeneratedKeyColumns("review_id");
         int id = simpleJdbcInsert.executeAndReturnKey(review.toMap()).intValue();
-
-        return getReviewById(id);
+        Reviews reviewToReturn = getReviewById(id);
+        eventStorage.addReview(id, reviewToReturn.getUserId());
+        return reviewToReturn;
     }
 
     public Reviews updateReview(Reviews review) {
@@ -33,7 +37,9 @@ public class DbReviewStorage {
         }
         String sql = "UPDATE reviews SET review_text = ?, is_positive = ? WHERE review_id = ?";
         jdbcTemplate.update(sql, review.getReviewText(), review.getIsPositive(), review.getId());
-        return getReviewById(review.getId());
+        Reviews reviewToReturn = getReviewById(review.getId());
+        eventStorage.updateReview(reviewToReturn.getFilmId(), reviewToReturn.getUserId());
+        return reviewToReturn;
     }
 
     public Reviews getReviewById(Integer id) {
@@ -52,9 +58,7 @@ public class DbReviewStorage {
                 "on r.review_id = f.review_id " +
                 "where r.review_id = ? " +
                 "group by r.review_id";
-        Reviews reviews = jdbcTemplate.queryForObject(sql,
-                new MapRowToReview(), id);
-        return reviews;
+        return jdbcTemplate.queryForObject(sql, new MapRowToReview(), id);
     }
 
     public Reviews deleteReviewById(Integer id) {
@@ -63,6 +67,7 @@ public class DbReviewStorage {
         jdbcTemplate.update(sqlReview, id);
         String sqlFeedback = "delete from reviews_feedback where review_id = ?";
         jdbcTemplate.update(sqlFeedback, reviews.getId());
+        eventStorage.removeReview(reviews.getFilmId(), reviews.getUserId());
         return reviews;
     }
 
