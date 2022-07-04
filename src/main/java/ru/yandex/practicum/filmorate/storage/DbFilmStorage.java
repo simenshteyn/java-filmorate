@@ -278,7 +278,7 @@ public class DbFilmStorage implements FilmStorage {
 
     @Override
     public Map<Integer, Set<Integer>> getUserLikes() {
-        String sql = "SELECT user_id, film_id FROM films_liked LIMIT 1000";
+        String sql = "SELECT user_id, film_id FROM films_liked";
 
         Map<Integer, Set<Integer>> likes = new HashMap<>();
         jdbcTemplate.query(sql, (rs) -> {
