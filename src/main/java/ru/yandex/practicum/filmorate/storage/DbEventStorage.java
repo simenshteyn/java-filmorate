@@ -59,10 +59,10 @@ public class DbEventStorage {
                 " et.event_type_name," +
                 " eo.event_operation_name," +
                 " e.event_time" +
-                " FROM events e " +
-                "JOIN event_operations eo ON e.event_operation_id = eo.event_operation_id" +
-               " JOIN event_Types et ON e.event_type_id = et.event_type_id" +
-               " WHERE e.user_id = ?";
+                    " FROM events e " +
+                        "JOIN event_operations eo ON e.event_operation_id = eo.event_operation_id" +
+                        " JOIN event_Types et ON e.event_type_id = et.event_type_id" +
+                            " WHERE e.user_id = ?";
         return jdbcTemplate.query(getFeedQuery, new MapRowToEvent(), id);
     }
 }

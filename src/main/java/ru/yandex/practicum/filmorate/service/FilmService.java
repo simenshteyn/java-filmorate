@@ -20,15 +20,14 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 public class FilmService {
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
-    private final DbEventStorage eventStorage;
+
 
     @Autowired
     public FilmService(@Qualifier("dbFilmStorage") FilmStorage filmStorage,
-                       @Qualifier("dbUserStorage") UserStorage userStorage,
-                       DbEventStorage eventStorage) {
+                       @Qualifier("dbUserStorage") UserStorage userStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
-        this.eventStorage = eventStorage;
+
     }
 
     /**
@@ -41,7 +40,6 @@ public class FilmService {
         User user = userStorage.getUser(userId).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Unable to find user"));
         Film film = getFilmById(filmId);
         filmStorage.saveFilmLike(user, film);
-        eventStorage.addLike(filmId, userId);
         return film;
     }
 
@@ -55,7 +53,6 @@ public class FilmService {
         User user = userStorage.getUser(userId).orElseThrow(()-> new ResponseStatusException(NOT_FOUND, "Unable to find user"));
         Film film = getFilmById(filmId);
         filmStorage.removeFilmLike(user, film);
-        eventStorage.removeLike(filmId, userId);
         return film;
     }
 

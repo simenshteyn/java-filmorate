@@ -12,16 +12,10 @@ import java.util.List;
 @Service
 public class EventService {
     private final DbEventStorage dbEventStorage;
-    private final DbReviewStorage reviewStorage;
 
     @Autowired
     public EventService(final DbEventStorage dbEventStorage, DbReviewStorage reviewStorage) {
         this.dbEventStorage = dbEventStorage;
-        this.reviewStorage = reviewStorage;
-    }
-
-    public void updateReview(Reviews review) {
-        dbEventStorage.updateReview(review.getFilmId(), review.getUserId());
     }
 
     public List<Event> getFeed(int id) {

@@ -18,7 +18,6 @@ class FilmServiceTest {
     static private UserStorage userStorage;
     static private FilmStorage filmStorage;
     static private FilmService filmService;
-    static private DbEventStorage eventStorage;
     static private User user;
     static private Film film;
 
@@ -26,7 +25,7 @@ class FilmServiceTest {
     static void beforeAll() {
         userStorage = new InMemoryUserStorage();
         filmStorage = new InMemoryFilmStorage();
-        filmService = new FilmService(filmStorage, userStorage, eventStorage);
+        filmService = new FilmService(filmStorage, userStorage);
 
         user = new User();
         user.setId(1);
