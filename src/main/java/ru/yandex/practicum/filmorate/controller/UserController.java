@@ -20,13 +20,11 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
     private final RecommendationService recommendationService;
-    private final EventService eventService;
 
     @Autowired
-    public UserController(UserService userService, RecommendationService recommendationService, EventService eventService) {
+    public UserController(UserService userService, RecommendationService recommendationService) {
         this.userService = userService;
         this.recommendationService = recommendationService;
-        this.eventService = eventService;
     }
 
     @GetMapping("/users")

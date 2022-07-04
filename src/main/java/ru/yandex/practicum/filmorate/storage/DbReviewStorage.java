@@ -58,9 +58,7 @@ public class DbReviewStorage {
                 "on r.review_id = f.review_id " +
                 "where r.review_id = ? " +
                 "group by r.review_id";
-        Reviews reviews = jdbcTemplate.queryForObject(sql,
-                new MapRowToReview(), id);
-        return reviews;
+        return jdbcTemplate.queryForObject(sql, new MapRowToReview(), id);
     }
 
     public Reviews deleteReviewById(Integer id) {

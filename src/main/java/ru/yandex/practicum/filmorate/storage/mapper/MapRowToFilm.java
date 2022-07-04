@@ -34,5 +34,4 @@ public class MapRowToFilm implements RowMapper<Film> {
 
         return result;
     }
-
 }

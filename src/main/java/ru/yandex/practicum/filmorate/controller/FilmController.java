@@ -23,12 +23,10 @@ import java.util.*;
 @Validated
 public class FilmController {
     private final FilmService filmService;
-    private final EventService eventService;
 
     @Autowired
-    public FilmController(FilmService filmService, EventService eventService) {
+    public FilmController(FilmService filmService) {
         this.filmService = filmService;
-        this.eventService = eventService;
     }
 
     @GetMapping("/films")

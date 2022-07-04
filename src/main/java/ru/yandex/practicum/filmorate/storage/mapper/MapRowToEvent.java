@@ -5,7 +5,6 @@ import ru.yandex.practicum.filmorate.model.Event;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 
 public class MapRowToEvent implements RowMapper<Event> {
     @Override

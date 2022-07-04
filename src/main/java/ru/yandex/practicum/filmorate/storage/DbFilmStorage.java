@@ -73,7 +73,7 @@ public class DbFilmStorage implements FilmStorage {
     public Optional<Film> updateFilm(int filmId, Film film) {
         try {
             String sqlQuerySearch = "SELECT film_id, film_name, film_description, film_release_date, film_duration, film_rating_id " +
-                    "FROM films WHERE film_id = ?";
+                                      "FROM films WHERE film_id = ?";
             jdbcTemplate.queryForObject(sqlQuerySearch, new BeanPropertyRowMapper<>(Film.class), filmId);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -87,7 +87,7 @@ public class DbFilmStorage implements FilmStorage {
             List<Integer> listFind = jdbcTemplate.query(sqlCheck, (rs, rowNum) -> rs.getInt(1), filmId);
             if (listFind.size() == 0) {
                 String sqlDir = "INSERT INTO film_directors (film_id, director_id) " +
-                        "VALUES (?, ?)";
+                                            "VALUES (?, ?)";
                 jdbcTemplate.update(sqlDir,
                         filmId,
                         film.getDirectors().get(0).getId());
@@ -124,14 +124,14 @@ public class DbFilmStorage implements FilmStorage {
     public Optional<Film> getFilm(int filmId) {
         try {
             String sqlQuery = "SELECT film_id, film_name, film_description, film_release_date, film_duration, film_rating_id " +
-                    "FROM films WHERE film_id = ?";
+                                "FROM films WHERE film_id = ?";
             Optional<Film> result = Optional.ofNullable(jdbcTemplate.queryForObject(sqlQuery, this::mapRowToFilm, filmId));
 
             if (result.isPresent()) {
                 Film film = result.get();
 
                 String sqlQueryGenres = "SELECT g.genre_id, g.genre_name FROM film_genres AS fg " +
-                        "JOIN genres AS g ON g.genre_id = fg.genre_id WHERE fg.film_id = ?";
+                                          "JOIN genres AS g ON g.genre_id = fg.genre_id WHERE fg.film_id = ?";
                 List<Genre> genres = jdbcTemplate.query(sqlQueryGenres, this::mapRowToGenre, filmId);
                 if (genres.size() > 0) {
                     film.setGenres(new HashSet<>());
@@ -199,13 +199,13 @@ public class DbFilmStorage implements FilmStorage {
         }
 
         String sqlQuery = "SELECT f.film_id, f.film_name, f.film_description, f.film_release_date, f.film_duration, f.film_rating_id " +
-                "FROM films AS f " +
-                "LEFT JOIN films_liked AS fl " +
-                "ON f.film_id = fl.film_id " +
-                "LEFT JOIN film_genres AS fg " +
-                "ON fg.film_id = f.film_id " + filterQuery +
-                " GROUP BY f.film_id " +
-                "ORDER BY COUNT(DISTINCT fl.user_id) DESC LIMIT ?";
+                            "FROM films AS f " +
+                                 "LEFT JOIN films_liked AS fl " +
+                                           "ON f.film_id = fl.film_id " +
+                                 "LEFT JOIN film_genres AS fg " +
+                                           "ON fg.film_id = f.film_id " + filterQuery +
+                          " GROUP BY f.film_id " +
+                           "ORDER BY COUNT(DISTINCT fl.user_id) DESC LIMIT ?";
         List<Film> filmsFound = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, amount);
         List<Film> result = new ArrayList<>();
         filmsFound.forEach((f) -> result.add(getFilmById(f.getId())));
@@ -215,7 +215,6 @@ public class DbFilmStorage implements FilmStorage {
     @Override
     public List<Genre> getAllGenres() {
         String sqlQuery = "SELECT genre_id, genre_name FROM genres ORDER BY genre_id ASC";
-
         return jdbcTemplate.query(sqlQuery, this::mapRowToGenre);
     }
 
@@ -298,11 +297,11 @@ public class DbFilmStorage implements FilmStorage {
         String queryModified = "%" + query.toLowerCase() + "%";
 
         String queryBase = "SELECT f.film_id, f.film_name, f.film_description, f.film_release_date, f.film_duration, f.film_rating_id, d.director_id, d.director_name " +
-                "FROM films AS f " +
-                "LEFT JOIN film_directors AS fd " +
-                "ON fd.film_id = f.film_id " +
-                "LEFT JOIN directors AS d " +
-                "ON fd.director_id = d.director_id ";
+                             "FROM films AS f " +
+                                  "LEFT JOIN film_directors AS fd " +
+                                            "ON fd.film_id = f.film_id " +
+                                  "LEFT JOIN directors AS d " +
+                                            "ON fd.director_id = d.director_id ";
         if (searchBy.size() == 1) {
             switch (searchBy.get(0)) {
                 case "title":
@@ -326,10 +325,10 @@ public class DbFilmStorage implements FilmStorage {
         }
 
         String sqlQueryGenres = "SELECT g.genre_id, g.genre_name " +
-                "FROM film_genres AS fg " +
-                "JOIN genres AS g " +
-                "ON g.genre_id = fg.genre_id " +
-                "WHERE film_id = ?";
+                                  "FROM film_genres AS fg " +
+                                       "JOIN genres AS g " +
+                                            "ON g.genre_id = fg.genre_id " +
+                                 "WHERE film_id = ?";
         String sqlQueryRating = "SELECT rating_id, rating_name FROM ratings WHERE rating_id = ?";
         result.forEach(film -> {
             List<Genre> genres = jdbcTemplate.query(sqlQueryGenres, new MapRowToGenre(), film.getId());
@@ -347,16 +346,16 @@ public class DbFilmStorage implements FilmStorage {
         List<Film> result = new ArrayList<>();
         try {
             String sqlQuery = "SELECT f.film_id, f.film_name, f.film_description, f.film_release_date, f.film_duration, f.film_rating_id " +
-                    "FROM films AS f " +
-                    "LEFT JOIN films_liked AS fl ON f.film_id = fl.film_id " +
-                 "WHERE f.film_id IN " +
-                        "(SELECT DISTINCT fl1.film_id "+
-                            "FROM films_liked AS fl1 " +
-                            "JOIN films_liked AS fl2 " +
-                                "ON fl1.film_id = fl2.film_id " +
-                                "WHERE fl1.user_id = ? AND fl2.user_id = ?) " +
-                    "GROUP BY f.film_id " +
-                    "ORDER BY COUNT(DISTINCT fl.user_id) DESC";
+                                "FROM films AS f " +
+                                     "LEFT JOIN films_liked AS fl ON f.film_id = fl.film_id " +
+                               "WHERE f.film_id IN " +
+                                     "(SELECT DISTINCT fl1.film_id "+
+                                        "FROM films_liked AS fl1 " +
+                                             "JOIN films_liked AS fl2 " +
+                                                  "ON fl1.film_id = fl2.film_id " +
+                                       "WHERE fl1.user_id = ? AND fl2.user_id = ?) " +
+                               "GROUP BY f.film_id " +
+                               "ORDER BY COUNT(DISTINCT fl.user_id) DESC";
             List<Film> films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, userId, friendId);
             films.forEach(f -> result.add(getFilmById(f.getId())));
         } catch (EmptyResultDataAccessException e) {
