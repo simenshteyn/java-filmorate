@@ -26,8 +26,9 @@ public class DbReviewStorage {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate).withTableName("reviews")
                 .usingGeneratedKeyColumns("review_id");
         int id = simpleJdbcInsert.executeAndReturnKey(review.toMap()).intValue();
-        eventStorage.addReview(review.getFilmId(), review.getUserId());
-        return getReviewById(id);
+        Reviews reviewToReturn = getReviewById(id);
+        eventStorage.addReview(reviewToReturn.getFilmId(), reviewToReturn.getUserId());
+        return reviewToReturn;
     }
 
     public Reviews updateReview(Reviews review) {
@@ -36,7 +37,9 @@ public class DbReviewStorage {
         }
         String sql = "UPDATE reviews SET review_text = ?, is_positive = ? WHERE review_id = ?";
         jdbcTemplate.update(sql, review.getReviewText(), review.getIsPositive(), review.getId());
-        return getReviewById(review.getId());
+        Reviews reviewToReturn = getReviewById(review.getId());
+        eventStorage.updateReview(reviewToReturn.getFilmId(), reviewToReturn.getUserId());
+        return reviewToReturn;
     }
 
     public Reviews getReviewById(Integer id) {

@@ -20,12 +20,10 @@ import javax.validation.constraints.Positive;
 @Validated
 public class ReviewsController {
     private ReviewService reviewService;
-    private EventService eventService;
 
     @Autowired
-    public ReviewsController(ReviewService reviewService, EventService eventService) {
+    public ReviewsController(ReviewService reviewService) {
         this.reviewService = reviewService;
-        this.eventService = eventService;
     }
 
     @PostMapping("/reviews")
@@ -45,7 +43,6 @@ public class ReviewsController {
             return ResponseEntity.badRequest()
                     .body(FilmorateValidationErrorBuilder.fromBindingErrors(errors));
         }
-        eventService.updateReview(reviews);
         return ResponseEntity.ok(reviewService.updateReview(reviews));
     }
 

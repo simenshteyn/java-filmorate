@@ -5,7 +5,10 @@ import lombok.Data;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.math.BigInteger;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.Date;
 
 @Data
 public class Event {
@@ -19,5 +22,5 @@ public class Event {
     @NotNull(message = "Entity id should be defined")
     int entityId;
     @NotNull(message = "Date and time should be defined")
-    Timestamp timestamp;
+    Long timestamp;
 }
