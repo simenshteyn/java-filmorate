@@ -16,17 +16,15 @@ public class ReviewService {
     private DbReviewStorage reviewStorage;
     private UserService userService;
     private FilmService filmService;
-    private DbEventStorage eventStorage;
 
     @Autowired
     public ReviewService(DbReviewStorage reviewStorage,
                          UserService userService,
-                         FilmService filmService,
-                         DbEventStorage eventStorage) {
+                         FilmService filmService) {
         this.reviewStorage = reviewStorage;
         this.userService = userService;
         this.filmService = filmService;
-        this.eventStorage = eventStorage;
+
     }
 
     public Reviews addReview(Reviews review) {

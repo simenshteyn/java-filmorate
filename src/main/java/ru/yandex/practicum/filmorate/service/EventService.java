@@ -21,7 +21,6 @@ public class EventService {
     }
 
     public void updateReview(Reviews review) {
-        Reviews reviewTo = reviewStorage.getReviewById(review.getId());
         dbEventStorage.updateReview(review.getFilmId(), review.getUserId());
     }
 

@@ -27,7 +27,7 @@ public class DbReviewStorage {
                 .usingGeneratedKeyColumns("review_id");
         int id = simpleJdbcInsert.executeAndReturnKey(review.toMap()).intValue();
         Reviews reviewToReturn = getReviewById(id);
-        eventStorage.addReview(reviewToReturn.getFilmId(), reviewToReturn.getUserId());
+        eventStorage.addReview(id, reviewToReturn.getUserId());
         return reviewToReturn;
     }
 
