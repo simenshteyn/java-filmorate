@@ -12,13 +12,13 @@ import java.util.List;
 @RestController
 @Slf4j
 public class EventController {
-EventService eventService;
+    EventService eventService;
 
     public EventController(final EventService eventService) {
         this.eventService = eventService;
     }
 
     @GetMapping ("/users/{id}/feed")
-  List<Event> getFeed(@PathVariable final int id)
+    List<Event> getFeed(@PathVariable final int id)
     {return eventService.getFeed(id);}
 }

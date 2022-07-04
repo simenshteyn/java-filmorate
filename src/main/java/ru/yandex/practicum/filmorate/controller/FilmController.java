@@ -74,7 +74,7 @@ public class FilmController {
         if (errors.hasErrors()) {
             log.info("Validation error with request: " + request.getRequestURI());
             return ResponseEntity.badRequest()
-                .body(FilmorateValidationErrorBuilder.fromBindingErrors(errors));
+                    .body(FilmorateValidationErrorBuilder.fromBindingErrors(errors));
         }
         return ResponseEntity.ok(filmService.addFilm(film));
     }
