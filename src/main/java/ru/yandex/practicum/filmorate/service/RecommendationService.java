@@ -18,17 +18,27 @@ public class RecommendationService {
         this.filmStorage = filmStorage;
     }
 
+    /**
+     Method helps the user find recommended films based on their likes
+     @param id ID of user
+     @return Set of recommended films
+     */
     public Set<Film> findRecommendedFilms(int id) {
+        // Find Map of the other user's like IDs to a Set of film IDs with the maximum intersections of films by likes
+        // according to id
         Map<Integer, Set<Integer>> intersectionsOfFilmsWithOtherUsers = findOtherUsersWithMaxIntersectionsByUserId(id);
         Set<Integer> resultFilmIds = new HashSet<>();
         Set<Film> result = new HashSet<>();
 
+        // Find each other's unwatched filmsIds based on common likes
         for (var entry : intersectionsOfFilmsWithOtherUsers.entrySet()) {
             Set<Integer> userFilms = likesOfAllUsers.get(id);
             Set<Integer> otherUserFilms = entry.getValue();
             otherUserFilms.removeAll(userFilms);
             resultFilmIds.addAll(otherUserFilms);
         }
+
+        // Add unwatched user's film that another user liked to the result
         for (var filmId : resultFilmIds) {
             result.add(filmStorage.getFilm(filmId).get());
         }
@@ -36,7 +46,7 @@ public class RecommendationService {
     }
 
     private Map<Integer, Set<Integer>> findOtherUsersWithMaxIntersectionsByUserId(int id) {
-        this.likesOfAllUsers = filmStorage.getLikes();
+        this.likesOfAllUsers = filmStorage.getUserLikes();
         Set<Integer> targetFilmsUserLikes = likesOfAllUsers.get(id);
         Map<Integer, Set<Integer>> result = new HashMap<>();
         Set<Integer> intersections = new HashSet<>();
