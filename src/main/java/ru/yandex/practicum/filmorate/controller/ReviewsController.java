@@ -7,6 +7,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Reviews;
+import ru.yandex.practicum.filmorate.service.EventService;
 import ru.yandex.practicum.filmorate.service.ReviewService;
 import ru.yandex.practicum.filmorate.validator.FilmorateValidationErrorBuilder;
 
@@ -19,10 +20,12 @@ import javax.validation.constraints.Positive;
 @Validated
 public class ReviewsController {
     private ReviewService reviewService;
+    private EventService eventService;
 
     @Autowired
-    public ReviewsController(ReviewService reviewService) {
+    public ReviewsController(ReviewService reviewService, EventService eventService) {
         this.reviewService = reviewService;
+        this.eventService = eventService;
     }
 
     @PostMapping("/reviews")
@@ -42,6 +45,7 @@ public class ReviewsController {
             return ResponseEntity.badRequest()
                     .body(FilmorateValidationErrorBuilder.fromBindingErrors(errors));
         }
+        eventService.updateReview(reviews);
         return ResponseEntity.ok(reviewService.updateReview(reviews));
     }
 

@@ -7,23 +7,26 @@ import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.model.Reviews;
 import ru.yandex.practicum.filmorate.storage.mapper.MapRowToReview;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Component
 public class DbReviewStorage {
     private final JdbcTemplate jdbcTemplate;
+    private DbEventStorage eventStorage;
 
-    public DbReviewStorage(JdbcTemplate jdbcTemplate) {
+    public DbReviewStorage(JdbcTemplate jdbcTemplate, DbEventStorage eventStorage) {
         this.jdbcTemplate = jdbcTemplate;
+        this.eventStorage = eventStorage;
     }
 
     public Reviews addReview(Reviews review) {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate).withTableName("reviews")
                 .usingGeneratedKeyColumns("review_id");
         int id = simpleJdbcInsert.executeAndReturnKey(review.toMap()).intValue();
-
+        eventStorage.addReview(review.getFilmId(), review.getUserId());
         return getReviewById(id);
     }
 
@@ -63,6 +66,7 @@ public class DbReviewStorage {
         jdbcTemplate.update(sqlReview, id);
         String sqlFeedback = "delete from reviews_feedback where review_id = ?";
         jdbcTemplate.update(sqlFeedback, reviews.getId());
+        eventStorage.removeReview(reviews.getFilmId(), reviews.getUserId());
         return reviews;
     }
 

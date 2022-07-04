@@ -15,13 +15,10 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @Service
 public class UserService {
     private final UserStorage storage;
-    private final DbEventStorage eventStorage;
 
     @Autowired
-    public UserService(@Qualifier("dbUserStorage") UserStorage storage,
-    DbEventStorage eventStorage) {
+    public UserService(@Qualifier("dbUserStorage") UserStorage storage) {
         this.storage = storage;
-        this.eventStorage = eventStorage;
     }
 
     /**
@@ -31,7 +28,6 @@ public class UserService {
      * @return List of Users if addition was successfull.
      */
     public List<User> makeFriends(int firstUserId, int secondUserId) {
-        eventStorage.addFriend(firstUserId, secondUserId);
         return storage.saveFriendship(firstUserId, secondUserId);
     }
 
@@ -42,7 +38,6 @@ public class UserService {
      * @return List of Users with removed friendship.
      */
     public List<User> removeFriends(int firstUserId, int secondUserId) {
-        eventStorage.removeFriend(firstUserId, secondUserId);
         return storage.removeFriendship(firstUserId, secondUserId);
     }
 

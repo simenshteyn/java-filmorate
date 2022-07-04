@@ -3,37 +3,26 @@ package ru.yandex.practicum.filmorate.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Event;
+import ru.yandex.practicum.filmorate.model.Reviews;
 import ru.yandex.practicum.filmorate.storage.DbEventStorage;
+import ru.yandex.practicum.filmorate.storage.DbReviewStorage;
 
 import java.util.List;
 
 @Service
 public class EventService {
-    DbEventStorage dbEventStorage;
+    private final DbEventStorage dbEventStorage;
+    private final DbReviewStorage reviewStorage;
 
     @Autowired
-    public EventService(final DbEventStorage dbEventStorage) {
+    public EventService(final DbEventStorage dbEventStorage, DbReviewStorage reviewStorage) {
         this.dbEventStorage = dbEventStorage;
+        this.reviewStorage = reviewStorage;
     }
 
-    public void addFriend(int userId, int friendId) {
-       dbEventStorage.addFriend(userId, friendId);
-    }
-
-    public void removeFriend(int userId, int friendId) {
-        dbEventStorage.removeFriend(userId, friendId);
-    }
-
-    public void addReview(int filmId, int userId) {
-        dbEventStorage.addReview(filmId, userId);
-    }
-
-    public void removeReview(int filmId, int userId) {
-        dbEventStorage.removeReview(filmId, userId);
-    }
-
-    public void updateReview(int filmId, int userId) {
-        dbEventStorage.updateReview(filmId, userId);
+    public void updateReview(Reviews review) {
+        Reviews reviewTo = reviewStorage.getReviewById(review.getId());
+        dbEventStorage.updateReview(review.getFilmId(), review.getUserId());
     }
 
     public List<Event> getFeed(int id) {

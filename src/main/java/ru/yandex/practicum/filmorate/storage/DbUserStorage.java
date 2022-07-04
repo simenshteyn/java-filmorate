@@ -23,9 +23,12 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @Qualifier("dbUserStorage")
 public class DbUserStorage implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
+    private final DbEventStorage eventStorage;
 
-    public DbUserStorage(JdbcTemplate jdbcTemplate) {
+    public DbUserStorage(JdbcTemplate jdbcTemplate, DbEventStorage eventStorage) {
+
         this.jdbcTemplate = jdbcTemplate;
+        this.eventStorage = eventStorage;
     }
 
     @Override
@@ -124,6 +127,7 @@ public class DbUserStorage implements UserStorage {
         User second = getUserById(secondUserId);
         String sqlQuery = "INSERT INTO friendships VALUES (?, ?, true)";
         jdbcTemplate.update(sqlQuery, firstUserId, secondUserId);
+        eventStorage.addFriend(firstUserId, secondUserId);
         return List.of(first, second);
     }
 
@@ -133,6 +137,7 @@ public class DbUserStorage implements UserStorage {
         User second = getUserById(secondUserId);
         String sqlQuery = "DELETE FROM friendships WHERE (from_id, to_id) IN ((?, ?)) AND is_approved = true";
         jdbcTemplate.update(sqlQuery, firstUserId, secondUserId);
+        eventStorage.removeFriend(firstUserId, secondUserId);
         return List.of(first, second);
     }
 

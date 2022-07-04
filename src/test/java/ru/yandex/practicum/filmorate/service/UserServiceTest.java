@@ -16,12 +16,11 @@ import static org.junit.jupiter.api.Assertions.*;
 class UserServiceTest {
     static private UserStorage storage;
     static private UserService service;
-    static private DbEventStorage eventStorage;
 
     @BeforeAll
     static void beforeAll() {
         storage = new InMemoryUserStorage();
-        service = new UserService(storage, eventStorage);
+        service = new UserService(storage);
 
         User firstUser = new User();
         firstUser.setId(1);
