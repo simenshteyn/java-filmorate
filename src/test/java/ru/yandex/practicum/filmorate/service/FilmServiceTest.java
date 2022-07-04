@@ -4,10 +4,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.storage.*;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -21,6 +18,7 @@ class FilmServiceTest {
     static private UserStorage userStorage;
     static private FilmStorage filmStorage;
     static private FilmService filmService;
+    static private DbEventStorage eventStorage;
     static private User user;
     static private Film film;
 
@@ -28,7 +26,7 @@ class FilmServiceTest {
     static void beforeAll() {
         userStorage = new InMemoryUserStorage();
         filmStorage = new InMemoryFilmStorage();
-        filmService = new FilmService(filmStorage, userStorage);
+        filmService = new FilmService(filmStorage, userStorage, eventStorage);
 
         user = new User();
         user.setId(1);

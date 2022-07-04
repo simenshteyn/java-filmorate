@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Rating;
+import ru.yandex.practicum.filmorate.service.EventService;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.validator.FilmorateValidationErrorBuilder;
 
@@ -22,10 +23,12 @@ import java.util.*;
 @Validated
 public class FilmController {
     private final FilmService filmService;
+    private final EventService eventService;
 
     @Autowired
-    public FilmController(FilmService filmService) {
+    public FilmController(FilmService filmService, EventService eventService) {
         this.filmService = filmService;
+        this.eventService = eventService;
     }
 
     @GetMapping("/films")
@@ -71,7 +74,7 @@ public class FilmController {
         if (errors.hasErrors()) {
             log.info("Validation error with request: " + request.getRequestURI());
             return ResponseEntity.badRequest()
-                .body(FilmorateValidationErrorBuilder.fromBindingErrors(errors));
+                    .body(FilmorateValidationErrorBuilder.fromBindingErrors(errors));
         }
         return ResponseEntity.ok(filmService.addFilm(film));
     }
