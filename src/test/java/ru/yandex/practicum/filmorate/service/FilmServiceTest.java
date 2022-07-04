@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.springframework.jdbc.core.JdbcTemplate;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.*;
@@ -18,15 +19,17 @@ class FilmServiceTest {
     static private UserStorage userStorage;
     static private FilmStorage filmStorage;
     static private FilmService filmService;
-    static private DbEventStorage eventStorage;
+    static private  DbEventStorage eventStorage;
     static private User user;
     static private Film film;
 
     @BeforeAll
     static void beforeAll() {
+        eventStorage = new DbEventStorage(new JdbcTemplate());
         userStorage = new InMemoryUserStorage();
         filmStorage = new InMemoryFilmStorage();
         filmService = new FilmService(filmStorage, userStorage, eventStorage);
+
 
         user = new User();
         user.setId(1);
