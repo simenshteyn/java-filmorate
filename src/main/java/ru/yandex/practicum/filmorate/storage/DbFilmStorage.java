@@ -22,10 +22,8 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @Qualifier("dBFilmStorage")
 public class DbFilmStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
-    private final DbEventStorage eventStorage;
-    public DbFilmStorage(JdbcTemplate jdbcTemplate, final DbEventStorage eventStorage) {
+    public DbFilmStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.eventStorage = eventStorage;
     }
 
 
@@ -176,7 +174,7 @@ public class DbFilmStorage implements FilmStorage {
     public Film saveFilmLike(User user, Film film) {
         String sqlQuery = "INSERT INTO films_liked (user_id, film_id) VALUES (?, ?)";
         jdbcTemplate.update(sqlQuery, user.getId(), film.getId());
-        eventStorage.addLike(film.getId(), user.getId());
+
         return getFilmById(film.getId());
     }
 
@@ -184,7 +182,6 @@ public class DbFilmStorage implements FilmStorage {
     public Film removeFilmLike(User user, Film film) {
         String sqlQuery = "DELETE FROM films_liked WHERE (user_id, film_id) IN ((?, ?))";
         jdbcTemplate.update(sqlQuery, user.getId(), film.getId());
-        eventStorage.removeLike(film.getId(), user.getId());
         return getFilmById(film.getId());
     }
 
