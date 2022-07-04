@@ -36,7 +36,7 @@ public class RecommendationService {
     }
 
     private Map<Integer, Set<Integer>> findOtherUsersWithMaxIntersectionsByUserId(int id) {
-        this.likesOfAllUsers = filmStorage.getLikes();
+        this.likesOfAllUsers = filmStorage.getUserLikes();
         Set<Integer> targetFilmsUserLikes = likesOfAllUsers.get(id);
         Map<Integer, Set<Integer>> result = new HashMap<>();
         Set<Integer> intersections = new HashSet<>();

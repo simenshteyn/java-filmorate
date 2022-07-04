@@ -1,9 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.Rating;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.*;
 
 import java.util.List;
 import java.util.Map;
@@ -124,5 +121,9 @@ public interface FilmStorage {
      */
     Optional<List<Film>> getCommonFilmsSortedByPopularity(int userId, int friendId);
 
-    Map<Integer, Set<Integer>> getLikes();
+    /**
+     * Get user likes for recommendation algorithm.
+     * @return Map of the user's like IDs to a Set of film IDs.
+     */
+    Map<Integer, Set<Integer>> getUserLikes();
 }

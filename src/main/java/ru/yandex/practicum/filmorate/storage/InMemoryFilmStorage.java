@@ -123,9 +123,8 @@ public class InMemoryFilmStorage implements FilmStorage {
         return result.isEmpty() ? -1 : storage.indexOf(result.get());
     }
 
-
     @Override
-    public Map<Integer, Set<Integer>> getLikes() {
+    public Map<Integer, Set<Integer>> getUserLikes() {
         throw new NotYetImplementedException();
     }
 }
