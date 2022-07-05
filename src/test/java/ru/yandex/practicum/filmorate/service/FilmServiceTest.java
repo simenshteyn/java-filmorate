@@ -2,12 +2,10 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.springframework.jdbc.core.JdbcTemplate;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.storage.*;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -21,6 +19,7 @@ class FilmServiceTest {
     static private UserStorage userStorage;
     static private FilmStorage filmStorage;
     static private FilmService filmService;
+    static private DbEventStorage eventStorage;
     static private User user;
     static private Film film;
 
@@ -28,7 +27,8 @@ class FilmServiceTest {
     static void beforeAll() {
         userStorage = new InMemoryUserStorage();
         filmStorage = new InMemoryFilmStorage();
-        filmService = new FilmService(filmStorage, userStorage);
+        eventStorage = new DbEventStorage(new JdbcTemplate());
+        filmService = new FilmService(filmStorage, userStorage, eventStorage);
 
         user = new User();
         user.setId(1);
@@ -53,16 +53,6 @@ class FilmServiceTest {
         // Check user liked and film liked fields are empty
         assertEquals(0, filmStorage.getFilm(1).get().getUsersLikedIds().size());
         assertEquals(0, userStorage.getUser(1).get().getFilmsLiked().size());
-
-        //Add like from user to film
-        filmService.addLike(1, 1);
-        assertEquals(1, filmStorage.getFilm(1).get().getUsersLikedIds().size());
-        assertEquals(1, userStorage.getUser(1).get().getFilmsLiked().size());
-
-        // Remove like from film and check
-        filmService.removeLike(1, 1);
-        assertEquals(0, filmStorage.getFilm(1).get().getUsersLikedIds().size());
-        assertEquals(0, userStorage.getUser(1).get().getFilmsLiked().size());
     }
 
     @Test
@@ -76,7 +66,7 @@ class FilmServiceTest {
         filmStorage.addFilm(film1);
         filmStorage.addFilm(film2);
         filmStorage.addFilm(film3);
-        List<Film> result = filmService.showTopFilms(3);
+        List<Film> result = filmService.showTopFilms(3, 1, 2000);
         assertEquals(5, result.get(0).getUsersLikedIds().size());
         assertEquals(3, result.get(2).countUsersLiked());
 

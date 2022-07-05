@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -7,9 +8,7 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Rating;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.Comparator.comparing;
@@ -81,7 +80,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getTopFilms(int amount) {
+    public List<Film> getTopFilms(int amount, int genreId, int year) {
         return getAllFilms().stream()
                 .distinct()
                 .sorted(comparing(Film::countUsersLiked).reversed().thenComparing(Film::getName))
@@ -109,8 +108,23 @@ public class InMemoryFilmStorage implements FilmStorage {
         return Optional.empty();
     }
 
+    @Override
+    public List<Film> searchFilmsByNameAndDirectors(String query, List<String> by) {
+        return null;
+    }
+
+    @Override
+    public Optional<List<Film>> getCommonFilmsSortedByPopularity(int userId, int friendId) {
+        return Optional.empty();
+    }
+
     private int findFilmIndexById(int id) {
         Optional<Film> result = storage.stream().filter(i -> i.getId() == id).findAny();
         return result.isEmpty() ? -1 : storage.indexOf(result.get());
+    }
+
+    @Override
+    public Map<Integer, Set<Integer>> getUserLikes() {
+        throw new NotYetImplementedException();
     }
 }

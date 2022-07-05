@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Rating;
+import ru.yandex.practicum.filmorate.service.EventService;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.validator.FilmorateValidationErrorBuilder;
 
@@ -60,8 +61,10 @@ public class FilmController {
     }
 
     @GetMapping("/films/popular")
-    public ResponseEntity<?> getTopFilms(@Positive @RequestParam(required = false, defaultValue = "10") int count) {
-        return ResponseEntity.ok(filmService.showTopFilms(count));
+    public ResponseEntity<?> getTopFilms(@Positive @RequestParam(required = false, defaultValue = "10") int count,
+                                         @RequestParam(required = false, defaultValue = "-1") int genreId,
+                                         @RequestParam(required = false, defaultValue = "-1") int year) {
+        return ResponseEntity.ok(filmService.showTopFilms(count, genreId, year));
     }
 
     @PostMapping("/films")
@@ -69,7 +72,7 @@ public class FilmController {
         if (errors.hasErrors()) {
             log.info("Validation error with request: " + request.getRequestURI());
             return ResponseEntity.badRequest()
-                .body(FilmorateValidationErrorBuilder.fromBindingErrors(errors));
+                    .body(FilmorateValidationErrorBuilder.fromBindingErrors(errors));
         }
         return ResponseEntity.ok(filmService.addFilm(film));
     }
@@ -102,5 +105,20 @@ public class FilmController {
     @GetMapping("/mpa/{id}")
     public ResponseEntity<?> getRatingById(@PathVariable int id) {
         return ResponseEntity.ok(filmService.getRatingById(id));
+    }
+
+    @GetMapping("/films/search")
+    public List<Film> searchFilmsByNameAndDirectors(@RequestParam String query, @RequestParam List<String> by) {
+        return filmService.searchFilmsByNameAndDirectors(query, by);
+    }
+
+    @DeleteMapping("films/{filmId}")
+    public ResponseEntity<?> deleteFilmById(@PathVariable int filmId) {
+        return ResponseEntity.ok(filmService.deleteFilmById(filmId));
+    }
+
+    @GetMapping("/films/common")
+    public ResponseEntity<?> getCommonFilmsSortedByPopularity(@RequestParam int userId, @RequestParam int friendId) {
+        return ResponseEntity.ok(filmService.getCommonFilmsSortedByPopularity(userId, friendId));
     }
 }
