@@ -16,9 +16,9 @@ public interface UserStorage {
     /**
      * Remove User object from storage by ID.
      * @param userId ID of User to remove.
-     * @return Optional of User or Empty Optional if ID not found.
+     * @return Added User object or null, if it has no success.
      */
-    Optional<User> removeUser(int userId);
+    User removeUser(int userId);
 
     /**
      * Remove all users from storage.

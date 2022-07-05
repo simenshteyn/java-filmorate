@@ -28,11 +28,11 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public Optional<User> removeUser(int userId) {
+    public User removeUser(int userId) {
         int result = findUserIndexById(userId);
-        if (result != -1) return Optional.of(storage.remove(result));
-        return Optional.empty();
-}
+        if (result != -1) return storage.remove(result);
+        return null;
+    }
 
     @Override
     public void removeAll() {

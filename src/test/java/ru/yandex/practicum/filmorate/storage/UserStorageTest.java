@@ -52,8 +52,8 @@ abstract class UserStorageTest<T extends UserStorage> {
         assertEquals(1, storage.getAllUsers().size());
 
         // Remove user and check it
-        Optional<User> removedUser = storage.removeUser(user.getId());
-        assertEquals("Testuser", removedUser.get().getName());
+        User removedUser = storage.removeUser(user.getId());
+        assertEquals("Testuser", removedUser.getName());
         assertTrue(storage.getAllUsers().isEmpty());
     }
 

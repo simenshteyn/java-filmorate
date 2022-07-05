@@ -6,25 +6,21 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.service.EventService;
-import ru.yandex.practicum.filmorate.service.RecommendationService;
 import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.validator.FilmorateValidationErrorBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.List;
+import java.util.*;
 
 @RestController
 @Slf4j
 public class UserController {
     private final UserService userService;
-    private final RecommendationService recommendationService;
 
     @Autowired
-    public UserController(UserService userService, RecommendationService recommendationService) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.recommendationService = recommendationService;
     }
 
     @GetMapping("/users")
@@ -62,7 +58,7 @@ public class UserController {
         if (errors.hasErrors()) {
             log.info("Validation error with request: " + request.getRequestURI());
             return ResponseEntity.badRequest()
-                    .body(FilmorateValidationErrorBuilder.fromBindingErrors(errors));
+                .body(FilmorateValidationErrorBuilder.fromBindingErrors(errors));
         }
         return ResponseEntity.ok(userService.addUser(user));
     }
@@ -85,15 +81,5 @@ public class UserController {
                     .body(FilmorateValidationErrorBuilder.fromBindingErrors(errors));
         }
         return ResponseEntity.ok(userService.updateUser(id, user));
-    }
-
-    @DeleteMapping("/users/{userId}")
-    public ResponseEntity<?> delete(@PathVariable int userId) {
-        return ResponseEntity.ok(userService.deleteUserById(userId));
-    }
-
-    @GetMapping("/users/{id}/recommendations")
-    ResponseEntity<?> findRecommendationsById(@PathVariable int id) {
-        return ResponseEntity.ok(recommendationService.findRecommendedFilms(id));
     }
 }
