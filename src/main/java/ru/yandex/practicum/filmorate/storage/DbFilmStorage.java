@@ -148,7 +148,7 @@ public class DbFilmStorage implements FilmStorage {
                 List<Director> directors = jdbcTemplate.query(sqlQueryDirectors, new MapRowToDirector(), filmId);
                 if (directors.size() > 0) {
                     film.setDirectors(new ArrayList<>());
-                    directors.forEach(g -> film.getDirectors().add(g));
+                    directors.forEach(director -> film.getDirectors().add(director));
                 }
                 return Optional.of(film);
             }
@@ -214,7 +214,7 @@ public class DbFilmStorage implements FilmStorage {
 
     @Override
     public List<Genre> getAllGenres() {
-        String sqlQuery = "SELECT genre_id, genre_name FROM genres ORDER BY genre_id ASC";
+        String sqlQuery = "SELECT genre_id, genre_name FROM genres ORDER BY genre_id";
         return jdbcTemplate.query(sqlQuery, this::mapRowToGenre);
     }
 

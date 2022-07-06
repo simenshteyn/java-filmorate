@@ -12,15 +12,15 @@ import java.util.Date;
 
 @Data
 public class Event {
-    int eventId;
+    private int eventId;
     @NotNull (message = "User id should be defined")
-    int userId;
+    private int userId;
     @NotNull (message = "Event type should be defined")
-    String eventType;
+    private String eventType;
     @NotNull(message = "Operation should be defined")
-    String operation;
+    private String operation;
     @NotNull(message = "Entity id should be defined")
-    int entityId;
+    private int entityId;
     @NotNull(message = "Date and time should be defined")
-    Long timestamp;
+    private Long timestamp;
 }

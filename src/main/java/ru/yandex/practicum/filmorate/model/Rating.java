@@ -9,6 +9,6 @@ import javax.validation.constraints.NotNull;
 public class Rating {
     private int id;
     @NotNull(message = "Name can't be null")
-    @NotBlank(message = "Name can't be blanc")
+    @NotBlank(message = "Name can't be blank")
     private String name;
 }

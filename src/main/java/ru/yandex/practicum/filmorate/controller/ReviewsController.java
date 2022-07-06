@@ -62,9 +62,8 @@ public class ReviewsController {
     }
 
     @PutMapping("/reviews/{id}/like/{userId}")
-    public ResponseEntity<?> addLikeReview(@PathVariable Integer id, @PathVariable Integer userId) {
+    public void addLikeReview(@PathVariable Integer id, @PathVariable Integer userId) {
         reviewService.addLikeOrDislikeReview(id, userId, true);
-        return null;
     }
 
     @PutMapping("/reviews/{id}/dislike/{userId}")
