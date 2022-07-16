@@ -1,12 +1,11 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.Rating;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 public interface FilmStorage {
     /**
@@ -78,13 +77,53 @@ public interface FilmStorage {
      * @param amount Max amount of Films to get from storage.
      * @return List of Films.
      */
-    List<Film> getTopFilms(int amount);
+    List<Film> getTopFilms(int amount, int genreId, int year);
 
+    /**
+     * Get list of Genres from storage
+     * @return List of Genre objects. Could be empty.
+     */
     List<Genre> getAllGenres();
 
+    /**
+     * Get Genre object by ID.
+     * @param genreId ID of Genre to search in storage.
+     * @return Optional of Genre.
+     */
     Optional<Genre> getGenre(int genreId);
 
+    /**
+     * Get list of all Rating objects from storage.
+     * @return List of Rating objects.
+     */
     List<Rating> getAllRatings();
 
+    /**
+     * Get Rating object by ID.
+     * @param ratingId  ID of Rating object to search in storage.
+     * @return Optional of Rating object.
+     */
     Optional<Rating> getRating(int ratingId);
+
+    /**
+     * Search Films by film name, director name or both.
+     * @param query Text to search.
+     * @param by Could be "director", "title" or both "director,title".
+     * @return List of Film objects found in storage.
+     */
+    List<Film> searchFilmsByNameAndDirectors(String query, List<String> by);
+
+    /**
+     * Get common Films liked by two users.
+     * @param userId ID of first user.
+     * @param friendId ID of second user.
+     * @return Optional of Film List.
+     */
+    Optional<List<Film>> getCommonFilmsSortedByPopularity(int userId, int friendId);
+
+    /**
+     * Get user likes for recommendation algorithm.
+     * @return Map of the user's like IDs to a Set of film IDs.
+     */
+    Map<Integer, Set<Integer>> getUserLikes();
 }
